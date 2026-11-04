@@ -1,21 +1,6 @@
 {
   "stores": [
     {
-      "id": "store-1",
-      "name": "Dapur Bu Rahma Meranti",
-      "owner": "Ibu Rahma Wati",
-      "category": "Kuliner",
-      "city": "Desa Meranti",
-      "whatsapp": "6281234567801",
-      "address": "Jl. Poros Dusun I RT 02/RW 01, Desa Meranti",
-      "mapQuery": "Desa Meranti",
-      "openHours": "08.00 - 20.00 WIB",
-      "rating": 4.9,
-      "verified": true,
-      "avatar": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
-      "description": "Produsen aneka olahan kuliner rumahan, sambal kemasan, dan lauk kering khas Desa Meranti tanpa bahan pengawet."
-    },
-    {
       "id": "store-2",
       "name": "Roastery Kopi Meranti",
       "owner": "Kang Dedi Pratama",
@@ -62,28 +47,6 @@
     }
   ],
   "products": [
-    {
-      "id": "prod-101",
-      "storeId": "store-1",
-      "name": "Sambal Roa Asap Botol Kaca",
-      "category": "Kuliner",
-      "price": 38000,
-      "unit": "Botol 150gr",
-      "badge": "🔥 Terlaris",
-      "image": "https://images.unsplash.com/photo-1589187151053-5ec8818e661b?auto=format&fit=crop&w=700&q=80",
-      "description": "Sambal ikan roa asap dimasak perlahan dengan cabai rawit segar dan minyak kelapa murni. Tahan hingga 3 bulan di suhu ruang."
-    },
-    {
-      "id": "prod-102",
-      "storeId": "store-1",
-      "name": "Keripik Tempe Sagu Renyah",
-      "category": "Kuliner",
-      "price": 22000,
-      "unit": "Pouch 200gr",
-      "badge": "⭐ Favorit",
-      "image": "https://images.unsplash.com/photo-1621447504864-d8686e12698c?auto=format&fit=crop&w=700&q=80",
-      "description": "Irisan tipis tempe kedelai lokal berbalut tepung sagu dengan bumbu ketumbar dan daun jeruk yang wangi."
-    },
     {
       "id": "prod-103",
       "storeId": "store-2",
@@ -187,5 +150,5 @@
     "footerTitle": "Direktori Resmi UMKM Desa Meranti 🚀",
     "adminCode": "meranti123"
   },
-  "updatedAt": "2026-11-04T12:20:56.774Z"
+  "updatedAt": "2026-11-04T13:43:25.751Z"
 }
