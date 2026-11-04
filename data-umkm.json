@@ -1,45 +1,6 @@
 {
-  "stores": [
-    {
-      "id": "store-4",
-      "name": "Kriya Bambu & Rotan Meranti",
-      "owner": "Pak Hendra Wijaya",
-      "category": "Kriya",
-      "city": "Desa Meranti",
-      "whatsapp": "6282144556604",
-      "address": "Sentra Kerajinan Dusun IV RT 03/RW 04, Desa Meranti",
-      "mapQuery": "Balai Desa Meranti",
-      "openHours": "08.00 - 17.30 WIB",
-      "rating": 4.9,
-      "verified": true,
-      "avatar": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=600&q=80",
-      "description": "Kerajinan tangan anyaman bambu dan rotan berkualitas untuk dekorasi rumah dan perlengkapan dapur."
-    }
-  ],
-  "products": [
-    {
-      "id": "prod-107",
-      "storeId": "store-4",
-      "name": "Keranjang Anyaman Rotan Natural",
-      "category": "Kriya",
-      "price": 95000,
-      "unit": "Set isi 2 Pcs",
-      "badge": "🏡 Estetik",
-      "image": "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=700&q=80",
-      "description": "Keranjang multifungsi dari rotan alami yang sudah dihaluskan dan dilapisi anti-jamur."
-    },
-    {
-      "id": "prod-108",
-      "storeId": "store-4",
-      "name": "Lampu Gantung Kap Bambu",
-      "category": "Kriya",
-      "price": 120000,
-      "unit": "Diameter 35cm",
-      "badge": "💡 Handmade",
-      "image": "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=700&q=80",
-      "description": "Kap lampu gantung anyaman bambu yang menciptakan bias cahaya hangat dan artistik di ruang tamu."
-    }
-  ],
+  "stores": [],
+  "products": [],
   "categories": [
     {
       "id": "Kuliner",
@@ -76,5 +37,5 @@
     "footerTitle": "Direktori Resmi UMKM Desa Meranti 🚀",
     "adminCode": "meranti123"
   },
-  "updatedAt": "2026-11-04T13:43:30.040Z"
+  "updatedAt": "2026-11-04T13:43:35.803Z"
 }
