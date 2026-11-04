@@ -1,0 +1,2617 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UMKM Desa Meranti — Katalog Lokal & Peta Toko</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans for Gen Z vibe -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            950: '#172554',
+                        },
+                        accent: {
+                            pink: '#f43f5e',
+                            purple: '#8b5cf6',
+                            yellow: '#f59e0b',
+                            cyan: '#06b6d4'
+                        }
+                    },
+                    boxShadow: {
+                        'genz': '0 10px 25px -3px rgba(37, 99, 235, 0.2), 0 4px 6px -4px rgba(37, 99, 235, 0.12)',
+                        'floating': '0 20px 35px -10px rgba(0, 0, 0, 0.12)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fafaf9;
+            -webkit-tap-highlight-color: transparent;
+        }
+        h1, h2, h3, .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        /* Custom smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f4f4f5;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4d4d8;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1aa;
+        }
+        .card-pop {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .card-pop:active {
+            transform: scale(0.97);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Glassmorphism effects */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .glass-bottom-bar {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    </style>
+</head>
+<body class="text-zinc-800 antialiased min-h-screen flex flex-col pb-20 sm:pb-0">
+
+    <!-- Top Notification Toast -->
+    <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none w-[90%] max-w-md"></div>
+
+    <!-- ========================================== -->
+    <!-- WEB PELANGGAN (CUSTOMER VIEW)              -->
+    <!-- ========================================== -->
+    <div id="customerAppWrapper" class="flex-1 flex flex-col max-w-3xl w-full mx-auto">
+
+    <!-- Simple Mobile Header -->
+    <header class="sticky top-0 z-30 glass-nav border-b border-zinc-200/70">
+        <div class="px-4 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer select-none" onclick="handleHeaderLogoTap()">
+                <div class="w-11 h-11 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-genz">
+                    <i class="fa-solid fa-store text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="font-display font-extrabold text-xl tracking-tight text-zinc-900"><span id="headerBrandMain">UMKM</span><span id="headerBrandAccent" class="text-brand-600">Meranti</span></span>
+                        <span id="headerBadgeText" class="text-[11px] font-extrabold bg-brand-100 text-brand-800 px-2.5 py-0.5 rounded-full">Desa Meranti</span>
+                    </div>
+                    <p id="headerSubtitle" class="text-xs text-zinc-500 font-medium">Direktori Toko, WA & Peta UMKM Desa Meranti</p>
+                </div>
+            </div>
+
+            <button onclick="switchMainTab('stores')" id="topMapBtn" class="bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 text-xs font-extrabold px-4 py-2.5 rounded-2xl transition-all flex items-center gap-2 card-pop">
+                <i class="fa-solid fa-map-location-dot text-sm"></i>
+                <span>Peta UMKM</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Simple & Clean Search + Kategori UMKM Filter -->
+    <section class="px-4 pt-4 pb-2 space-y-3">
+        <!-- Big Easy-to-Click Search Input -->
+        <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-brand-600 text-base"></i>
+            <input
+                type="text"
+                id="searchInput"
+                oninput="handleFilterChange()"
+                placeholder="Cari produk, nama toko, atau kategori UMKM..."
+                class="w-full pl-11 pr-11 py-3.5 bg-white text-zinc-900 border-2 border-brand-100 rounded-2xl text-sm font-semibold placeholder:text-zinc-400 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100 shadow-sm transition-all"
+            >
+            <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-zinc-100 text-zinc-500 hover:text-zinc-800 flex items-center justify-center">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+
+        <!-- Easy-to-Tap Kategori UMKM Filter Pills -->
+        <div class="space-y-1.5">
+            <p id="categorySectionLabel" class="text-xs font-extrabold text-zinc-500 px-1 uppercase tracking-wider">Kategori UMKM Desa Meranti:</p>
+            <div id="desaPillsContainer" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 px-4 py-3">
+
+        <!-- VIEW 1: BERANDA (DAFTAR PROFIL TOKO UMKM & HASIL PENCARIAN PRODUK) -->
+        <section id="viewProducts" class="space-y-6">
+            <!-- Bagian Hasil Pencarian Produk (Muncul jika ada kata kunci pencarian) -->
+            <div id="searchProductsSection" class="hidden space-y-3 bg-white p-4 sm:p-5 rounded-3xl border-2 border-brand-200 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-display text-base font-extrabold text-zinc-900 flex items-center gap-2">
+                        <i class="fa-solid fa-box-open text-brand-600"></i>
+                        <span>Hasil Pencarian Produk (<span id="searchProductCount">0</span>)</span>
+                    </h3>
+                    <button onclick="clearSearch()" class="text-xs font-bold text-zinc-400 hover:text-zinc-700">Tutup Hasil Produk</button>
+                </div>
+                <div id="searchProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-center justify-between px-1">
+                    <div>
+                        <h2 class="font-display text-lg font-extrabold text-zinc-900">
+                            Daftar Profil Toko UMKM
+                        </h2>
+                        <p class="text-xs text-zinc-500 font-medium">Ketuk kartu toko untuk melihat daftar produknya</p>
+                    </div>
+                    <span id="storeCountBadge" class="text-xs font-extrabold bg-brand-100 text-brand-800 px-3 py-1 rounded-full">
+                        0 Toko
+                    </span>
+                </div>
+
+                <!-- Vertical Clean Store Cards (3 Kolom) -->
+                <div id="homeStoreProfilesGrid" class="grid grid-cols-3 gap-2 sm:gap-3.5">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Empty State Store -->
+                <div id="emptyStoresState" class="hidden bg-white border border-zinc-200 rounded-3xl p-8 text-center my-4">
+                    <div class="w-14 h-14 rounded-2xl bg-zinc-100 text-zinc-400 flex items-center justify-center mx-auto mb-3 text-xl">
+                        <i class="fa-solid fa-store-slash"></i>
+                    </div>
+                    <h3 class="font-display text-base font-bold text-zinc-800 mb-1">Toko UMKM Tidak Ditemukan</h3>
+                    <p class="text-xs text-zinc-500 mb-4">Coba kata kunci lain atau pilih Semua Kategori UMKM.</p>
+                    <button onclick="resetAllFilters()" class="px-5 py-3 bg-brand-600 text-white text-xs font-extrabold rounded-2xl shadow-sm card-pop">
+                        Tampilkan Semua UMKM
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: TOKO SEDANG BUKA (BUKA SEKARANG) -->
+        <section id="viewOpenNow" class="hidden space-y-4">
+            <!-- Status Waktu Real-Time Banner (Versi Produksi Bersih) -->
+            <div class="bg-gradient-to-r from-brand-600 to-brand-700 rounded-3xl p-4 sm:p-5 text-white shadow-genz">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-lg">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-display text-base sm:text-lg font-extrabold leading-tight">Toko Buka Sekarang</h2>
+                            <p class="text-xs text-brand-100 font-medium">Siap melayani chat WA & kunjungan langsung</p>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span id="liveClockDisplay" class="inline-block font-mono text-xs sm:text-sm font-extrabold bg-zinc-950/30 px-3 py-1.5 rounded-xl border border-white/15">
+                            --:-- WIB
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daftar Toko yang Sedang Buka -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between px-1">
+                    <h3 class="font-display text-sm font-extrabold text-zinc-900 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                        <span>Daftar UMKM yang Sedang Buka</span>
+                    </h3>
+                    <span id="openStoreCountBadge" class="text-xs font-extrabold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">
+                        0 Toko Buka
+                    </span>
+                </div>
+
+                <div id="openNowStoresGrid" class="grid grid-cols-3 gap-2 sm:gap-3.5">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Daftar Toko yang Sedang Tutup -->
+            <div id="closedStoresWrapper" class="hidden pt-2 space-y-3">
+                <div class="flex items-center justify-between px-1">
+                    <h3 class="font-display text-sm font-extrabold text-zinc-500 flex items-center gap-2">
+                        <i class="fa-solid fa-moon text-zinc-400"></i>
+                        <span>Sedang Tutup Saat Ini</span>
+                    </h3>
+                </div>
+                <div id="closedNowStoresGrid" class="grid grid-cols-3 gap-2 sm:gap-3.5 opacity-85">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: INTERACTIVE STORE DIRECTORY & MAPS (Diakses dari tombol Peta UMKM di Atas) -->
+        <section id="viewStores" class="hidden space-y-4">
+            <div class="flex items-center justify-between px-1">
+                <div>
+                    <h2 class="font-display text-lg font-extrabold text-zinc-900 flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-rose-500"></i>
+                        <span>Peta Lokasi UMKM Desa Meranti</span>
+                    </h2>
+                    <p class="text-xs text-zinc-500 font-medium">Ketuk nama toko untuk melihat titik Google Maps</p>
+                </div>
+                <button onclick="switchMainTab('products')" class="text-xs font-extrabold text-brand-700 bg-brand-50 px-3.5 py-2 rounded-xl border border-brand-200">
+                    &larr; Kembali
+                </button>
+            </div>
+
+            <!-- Store Selector Pills on Map View -->
+            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1" id="storeListContainer">
+                <!-- Populated via JS -->
+            </div>
+
+            <!-- Map Detail Panel -->
+            <div class="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
+                <div id="storeMapDetailContainer">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR (Beranda Toko & Buka Sekarang) -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 glass-bottom-bar border-t border-zinc-200/80 px-4 py-2.5">
+        <div class="max-w-3xl mx-auto grid grid-cols-2 gap-3">
+            <button onclick="switchMainTab('products')" id="mobileBottomTabProducts" class="flex items-center justify-center gap-2 bg-brand-600 text-white py-3 px-4 rounded-2xl font-extrabold text-xs shadow-sm transition-all card-pop">
+                <i class="fa-solid fa-store text-sm"></i>
+                <span>Beranda Toko</span>
+            </button>
+            <button onclick="switchMainTab('openNow')" id="mobileBottomTabOpenNow" class="flex items-center justify-center gap-2 bg-zinc-100 text-zinc-700 py-3 px-4 rounded-2xl font-extrabold text-xs transition-all card-pop">
+                <i class="fa-solid fa-clock text-sm text-emerald-600"></i>
+                <span>Buka Sekarang</span>
+                <span id="bottomNavOpenBadge" class="px-2 py-0.5 text-[10px] rounded-full bg-emerald-100 text-emerald-800 font-extrabold">0</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL ETALASE PRODUK TOKO (Terbuka saat Toko diklik di Beranda) -->
+    <div id="storeEtalaseModal" class="fixed inset-0 z-50 hidden bg-zinc-950/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-zinc-50 rounded-t-3xl sm:rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-zinc-200">
+            <!-- Modal Header -->
+            <div class="bg-white px-5 py-4 border-b border-zinc-200 flex items-start justify-between gap-3 shrink-0">
+                <div class="flex items-center gap-3.5 min-w-0">
+                    <img id="etalaseStoreImg" src="" alt="Toko" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover bg-zinc-100 border border-zinc-200 shrink-0" onerror="this.src='https://placehold.co/200x200/e2e8f0/475569?text=Toko'">
+                    <div class="space-y-1 min-w-0">
+                        <span id="etalaseStoreDesa" class="inline-flex items-center gap-1 text-[10px] font-extrabold text-brand-700 bg-brand-50 px-2.5 py-0.5 rounded-full"></span>
+                        <h3 id="etalaseStoreName" class="font-display font-extrabold text-zinc-900 text-base sm:text-lg leading-tight truncate">Nama Toko</h3>
+                        <p id="etalaseStoreHours" class="text-xs text-zinc-600 font-semibold"></p>
+                        <p id="etalaseStoreAddress" class="text-[11px] text-zinc-500 truncate"></p>
+                    </div>
+                </div>
+                <button onclick="closeStoreEtalaseModal()" class="w-9 h-9 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 flex items-center justify-center text-base shrink-0 card-pop">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Products List Inside Store Modal -->
+            <div class="p-4 overflow-y-auto space-y-3 flex-1" id="etalaseProductsList">
+                <!-- Populated via JS -->
+            </div>
+
+            <!-- Modal Bottom Quick Actions -->
+            <div class="bg-white p-4 border-t border-zinc-200 grid grid-cols-2 gap-3 shrink-0">
+                <button id="etalaseMapBtn" class="py-3.5 px-4 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-extrabold text-xs flex items-center justify-center gap-2 card-pop">
+                    <i class="fa-solid fa-location-dot text-rose-500 text-sm"></i>
+                    <span>Lihat Peta Toko</span>
+                </button>
+                <a id="etalaseWaBtn" href="#" target="_blank" rel="noopener noreferrer" class="py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm card-pop">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>Hubungi Toko</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: STORE MAP & QUICK INFO MODAL -->
+    <div id="mapModal" class="fixed inset-0 z-50 hidden bg-zinc-950/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-zinc-200 my-auto animate-fadeIn">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-zinc-100 bg-zinc-50">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-base">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <div>
+                        <h3 id="modalStoreName" class="font-display font-bold text-zinc-900 text-sm sm:text-base">Nama Toko</h3>
+                        <p id="modalStoreCategory" class="text-[11px] text-zinc-500 font-semibold">Wilayah</p>
+                    </div>
+                </div>
+                <button onclick="closeMapModal()" class="w-8 h-8 rounded-xl bg-zinc-200/70 text-zinc-700 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="relative w-full h-60 sm:h-72 bg-zinc-100">
+                <iframe id="modalMapIframe" class="w-full h-full border-0" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src=""></iframe>
+            </div>
+
+            <div class="p-4 sm:p-5 space-y-3">
+                <div class="bg-zinc-50 p-3.5 rounded-2xl border border-zinc-200/80 space-y-2 text-xs">
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-map-pin text-rose-500 mt-0.5"></i>
+                        <p id="modalStoreAddress" class="text-zinc-700 font-medium"></p>
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-zinc-200/60 font-medium text-zinc-600">
+                        <span><i class="fa-regular fa-clock text-brand-600 mr-1"></i><span id="modalStoreHours"></span></span>
+                        <span><i class="fa-solid fa-phone text-brand-600 mr-1"></i><span id="modalStorePhone" class="font-mono font-bold text-zinc-800"></span></span>
+                    </div>
+                </div>
+
+                <a id="modalGoogleMapsExternalLink" href="#" target="_blank" rel="noopener noreferrer"
+                   class="w-full py-3.5 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm card-pop">
+                    <i class="fa-solid fa-diamond-turn-right"></i>
+                    <span>Buka Petunjuk Arah di Google Maps</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: PRODUCT DETAIL MODAL -->
+    <div id="productDetailModal" class="fixed inset-0 z-50 hidden bg-zinc-950/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-zinc-200 my-auto">
+            <div class="relative h-60 sm:h-72 bg-zinc-100">
+                <img id="detailProductImg" src="" alt="Produk" class="w-full h-full object-cover">
+                <button onclick="closeProductDetailModal()" class="absolute top-3 right-3 w-8 h-8 rounded-xl bg-zinc-950/70 text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="absolute bottom-3 left-3 flex items-center gap-2">
+                    <span id="detailProductCategory" class="px-2.5 py-1 rounded-xl text-[10px] font-bold bg-zinc-950/80 text-white backdrop-blur-md"></span>
+                    <span id="detailProductBadge" class="px-2.5 py-1 rounded-xl text-[10px] font-extrabold bg-amber-400 text-zinc-950 shadow-xs"></span>
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-5 space-y-3">
+                <div class="flex items-start justify-between gap-2 pb-3 border-b border-zinc-100">
+                    <div>
+                        <h3 id="detailProductName" class="font-display font-extrabold text-zinc-900 text-base sm:text-lg"></h3>
+                        <p id="detailProductUnit" class="text-xs text-zinc-500 font-medium"></p>
+                    </div>
+                    <span id="detailProductPrice" class="font-display text-lg sm:text-xl font-extrabold text-brand-700"></span>
+                </div>
+
+                <p id="detailProductDesc" class="text-xs sm:text-sm text-zinc-600 leading-relaxed"></p>
+
+                <div class="bg-zinc-50 p-3.5 rounded-2xl border border-zinc-200/80 space-y-2 text-xs">
+                    <div class="flex items-center justify-between">
+                        <span id="detailStoreName" class="font-bold text-zinc-900"></span>
+                        <span id="detailStoreCity" class="font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full border border-brand-200 text-[10px]"></span>
+                    </div>
+                    <p id="detailStoreAddress" class="text-zinc-500"></p>
+                    <div class="flex items-center justify-between pt-2 border-t border-zinc-200/60 text-[11px] text-zinc-700 font-medium">
+                        <span><i class="fa-regular fa-clock text-brand-600 mr-1"></i><strong id="detailStoreHours" class="text-zinc-900"></strong></span>
+                        <span><i class="fa-solid fa-phone text-brand-600 mr-1"></i><span id="detailStoreWa" class="font-mono font-bold text-zinc-800"></span></span>
+                    </div>
+                </div>
+
+                <a id="detailOrderWaBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm card-pop">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>Tanya Produk Ini via WhatsApp</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL KODE AKSES ADMIN (Tersembunyi) -->
+    <div id="adminAuthModal" class="fixed inset-0 z-50 hidden bg-zinc-950/75 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-zinc-200 space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-base">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-extrabold text-zinc-900 text-base">Akses Admin Desa</h3>
+                        <p class="text-[11px] text-zinc-500">Masukkan kode rahasia pengelola</p>
+                    </div>
+                </div>
+                <button onclick="closeAdminAuthModal()" class="w-8 h-8 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-600 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleAdminCodeSubmit(event)" class="space-y-3">
+                <div>
+                    <input
+                        type="password"
+                        id="adminSecretCodeInput"
+                        required
+                        placeholder="Masukkan kode akses..."
+                        class="w-full px-4 py-3 rounded-2xl border-2 border-zinc-200 focus:border-brand-500 focus:outline-none text-center font-mono text-sm font-extrabold tracking-widest bg-zinc-50 focus:bg-white transition-all"
+                    >
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs shadow-sm transition-all card-pop">
+                    <i class="fa-solid fa-right-to-bracket mr-1.5"></i>Masuk Panel Admin
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer (Tanpa Tombol Admin) -->
+    <footer class="py-8 px-4 text-center text-xs text-zinc-400 mb-20 space-y-1.5">
+        <p id="footerMainTitle" class="font-bold text-zinc-600">Direktori Resmi UMKM Desa Meranti 🚀</p>
+        <p id="footerSubTitle">Katalog Profil Toko, Jam Operasional, Google Maps & WhatsApp UMKM Desa Meranti</p>
+    </footer>
+
+    </div> <!-- End of #customerAppWrapper -->
+
+    <!-- ========================================== -->
+    <!-- ADMIN PANEL UMKM DESA MERANTI              -->
+    <!-- ========================================== -->
+    <div id="adminAppWrapper" class="hidden flex-1 flex flex-col max-w-4xl w-full mx-auto pb-16">
+        <!-- Admin Top Header -->
+        <header class="sticky top-0 z-30 bg-zinc-900 text-white border-b border-zinc-800">
+            <div class="px-4 py-3.5 flex items-center justify-between gap-3 flex-wrap">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-sm">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                        <h1 class="font-display font-extrabold text-base sm:text-lg">Admin UMKM Meranti</h1>
+                        <span id="cloudSyncStatusBadge" class="text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full">Auto-Sync Aktif</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-400">Kelola profil toko, nomor HP/WA, peta & produk</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="switchAdminSubTab('settings')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-extrabold px-3.5 py-2.5 rounded-2xl transition-all flex items-center gap-1.5 card-pop" title="Pengaturan Sinkronisasi Otomatis">
+                    <i class="fa-solid fa-rotate text-emerald-400"></i>
+                    <span class="hidden sm:inline">Pengaturan Auto-Sync</span>
+                </button>
+                <button onclick="switchAppMode('customer')" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-extrabold px-3.5 py-2.5 rounded-2xl transition-all flex items-center gap-1.5 card-pop shadow-sm">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Keluar Admin</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+        <div class="p-4 space-y-6">
+            <!-- Ringkasan Statistik -->
+            <div class="grid grid-cols-3 gap-3">
+                <div class="bg-white p-4 rounded-3xl border border-zinc-200 shadow-2xs">
+                    <p class="text-[11px] font-bold text-zinc-500">Total Toko UMKM</p>
+                    <p id="adminStatStores" class="font-display text-2xl font-extrabold text-zinc-900 mt-1">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-3xl border border-zinc-200 shadow-2xs">
+                    <p class="text-[11px] font-bold text-zinc-500">Total Produk</p>
+                    <p id="adminStatProducts" class="font-display text-2xl font-extrabold text-brand-600 mt-1">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-3xl border border-zinc-200 shadow-2xs">
+                    <p class="text-[11px] font-bold text-zinc-500">Sedang Buka</p>
+                    <p id="adminStatOpen" class="font-display text-2xl font-extrabold text-emerald-600 mt-1">0</p>
+                </div>
+            </div>
+
+            <!-- Navigasi Tab Admin -->
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+                <div class="flex gap-1.5 bg-zinc-200/70 p-1.5 rounded-2xl flex-wrap">
+                    <button onclick="switchAdminSubTab('stores')" id="adminTabBtnStores" class="px-4 py-2.5 rounded-xl text-xs font-extrabold bg-white text-zinc-900 shadow-xs transition-all">
+                        <i class="fa-solid fa-store mr-1.5 text-brand-600"></i>Data Toko UMKM
+                    </button>
+                    <button onclick="switchAdminSubTab('products')" id="adminTabBtnProducts" class="px-4 py-2.5 rounded-xl text-xs font-extrabold text-zinc-600 hover:text-zinc-900 transition-all">
+                        <i class="fa-solid fa-box-open mr-1.5 text-brand-600"></i>Katalog Produk
+                    </button>
+                    <button onclick="switchAdminSubTab('settings')" id="adminTabBtnSettings" class="px-4 py-2.5 rounded-xl text-xs font-extrabold text-zinc-600 hover:text-zinc-900 transition-all">
+                        <i class="fa-solid fa-sliders mr-1.5 text-brand-600"></i>Judul & Kategori
+                    </button>
+                </div>
+            </div>
+
+            <!-- SUB-VIEW 1: KELOLA TOKO UMKM -->
+            <div id="adminSubViewStores" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <!-- Form Tambah / Edit Toko -->
+                <div class="lg:col-span-5 bg-white p-5 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-zinc-100 pb-3">
+                        <h2 id="adminStoreFormTitle" class="font-display font-extrabold text-base text-zinc-900">
+                            + Tambah Toko UMKM Baru
+                        </h2>
+                        <button id="cancelEditStoreBtn" onclick="resetStoreForm()" class="hidden text-xs font-bold text-rose-600 hover:underline">
+                            Batal Edit
+                        </button>
+                    </div>
+
+                    <form id="adminStoreForm" onsubmit="handleSaveStore(event)" class="space-y-3.5 text-xs">
+                        <input type="hidden" id="storeFormId">
+
+                        <div>
+                            <label class="block font-bold text-zinc-700 mb-1">Nama Toko UMKM *</label>
+                            <input type="text" id="storeFormName" required placeholder="Contoh: Keripik Singkong Meranti Jaya" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-bold text-zinc-700 mb-1">Nama Pemilik *</label>
+                                <input type="text" id="storeFormOwner" required placeholder="Contoh: Ibu Siti" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-zinc-700 mb-1">Kategori UMKM *</label>
+                                <select id="storeFormCategory" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold bg-white">
+                                    <option value="Kuliner">🍜 Kuliner</option>
+                                    <option value="Minuman">☕ Minuman</option>
+                                    <option value="Fashion">👕 Fashion</option>
+                                    <option value="Kriya">🧺 Kriya & Kerajinan</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-bold text-zinc-700 mb-1">Nomor HP / WA (Lokal) *</label>
+                                <input type="text" id="storeFormWa" required placeholder="081234567890" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-mono font-bold">
+                                <span class="text-[10px] text-zinc-400">Cukup ketik 08xx tanpa +62</span>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-zinc-700 mb-1">Jam Operasional *</label>
+                                <input type="text" id="storeFormHours" required placeholder="08.00 - 20.00 WIB" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-zinc-700 mb-1">Alamat Lengkap di Desa Meranti *</label>
+                            <input type="text" id="storeFormAddress" required placeholder="Jl. Poros Dusun I RT 01/RW 02, Desa Meranti" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                        </div>
+
+                        <div class="bg-zinc-50 p-3 rounded-2xl border border-zinc-200/80 space-y-2.5">
+                            <label class="block font-bold text-zinc-700">Foto / Gambar Profil Toko</label>
+                            <div class="flex items-center gap-3">
+                                <img id="storeFormImagePreview" src="https://placehold.co/200x200/e2e8f0/475569?text=Foto+Toko" alt="Preview Toko" class="w-16 h-16 rounded-2xl object-cover bg-white border border-zinc-200 shrink-0" onerror="this.src='https://placehold.co/200x200/e2e8f0/475569?text=Foto+Toko'">
+                                <div class="flex-1 space-y-2 min-w-0">
+                                    <input type="text" id="storeFormImage" oninput="updateStoreImagePreview(this.value)" placeholder="Tempel link URL gambar toko..." class="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold bg-white">
+                                    <div class="flex items-center gap-2">
+                                        <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-extrabold text-[11px] border border-brand-200 transition-all">
+                                            <i class="fa-solid fa-camera"></i>
+                                            <span>Pilih Foto dari HP/Galeri</span>
+                                            <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'storeFormImage', 'storeFormImagePreview')">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="font-bold text-zinc-700">Titik Lokasi Google Maps *</label>
+                                <button type="button" onclick="previewAdminStoreMap()" class="text-[11px] font-extrabold text-brand-600 hover:underline">
+                                    <i class="fa-solid fa-location-crosshairs mr-1"></i>Uji Peta
+                                </button>
+                            </div>
+                            <input type="text" id="storeFormMapQuery" required placeholder="Balai Desa Meranti atau titik koordinat" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                            <div id="adminMapPreviewBox" class="hidden mt-2 rounded-2xl overflow-hidden border border-zinc-200 h-36 bg-zinc-100">
+                                <iframe id="adminMapPreviewIframe" class="w-full h-full border-0" loading="lazy"></iframe>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-zinc-700 mb-1">Deskripsi Singkat Toko *</label>
+                            <textarea id="storeFormDesc" rows="2" required placeholder="Jelaskan produk unggulan toko ini..." class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold"></textarea>
+                        </div>
+
+                        <button type="submit" id="storeFormSubmitBtn" class="w-full py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs shadow-sm transition-all card-pop">
+                            <i class="fa-solid fa-floppy-disk mr-1.5"></i>Simpan Data Toko
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Daftar Toko untuk Admin + Pencarian -->
+                <div class="lg:col-span-7 space-y-3">
+                    <div class="bg-white p-3.5 rounded-3xl border border-zinc-200 shadow-2xs flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                        <div class="relative flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+                            <input
+                                type="text"
+                                id="adminSearchStoreInput"
+                                oninput="renderAdminPanel()"
+                                placeholder="Cari nama toko, pemilik, alamat, atau nomor WA..."
+                                class="w-full pl-9 pr-8 py-2.5 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs font-semibold focus:outline-none focus:border-brand-500 focus:bg-white transition-all"
+                            >
+                            <button id="clearAdminStoreSearchBtn" onclick="clearAdminStoreSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-zinc-200 text-zinc-600 flex items-center justify-center text-[10px]">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <select id="adminFilterStoreCategory" onchange="renderAdminPanel()" class="px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs font-bold text-zinc-700 focus:outline-none focus:border-brand-500">
+                            <option value="ALL">Semua Kategori</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-3" id="adminStoresList">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-VIEW 2: KELOLA PRODUK UMKM -->
+            <div id="adminSubViewProducts" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <!-- Form Tambah / Edit Produk -->
+                <div class="lg:col-span-5 bg-white p-5 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-zinc-100 pb-3">
+                        <h2 id="adminProductFormTitle" class="font-display font-extrabold text-base text-zinc-900">
+                            + Tambah Produk Baru
+                        </h2>
+                        <button id="cancelEditProductBtn" onclick="resetProductForm()" class="hidden text-xs font-bold text-rose-600 hover:underline">
+                            Batal Edit
+                        </button>
+                    </div>
+
+                    <form id="adminProductForm" onsubmit="handleSaveProduct(event)" class="space-y-3.5 text-xs">
+                        <input type="hidden" id="productFormId">
+
+                        <div>
+                            <label class="block font-bold text-zinc-700 mb-1">Pilih Toko UMKM *</label>
+                            <select id="productFormStoreId" required class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold bg-white">
+                                <!-- Populated via JS -->
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-zinc-700 mb-1">Nama Produk *</label>
+                            <input type="text" id="productFormName" required placeholder="Contoh: Kopi Bubuk Robusta Meranti" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-bold text-zinc-700 mb-1">Harga (Rp) *</label>
+                                <input type="number" id="productFormPrice" required min="500" placeholder="35000" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-bold">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-zinc-700 mb-1">Satuan / Kemasan *</label>
+                                <input type="text" id="productFormUnit" required placeholder="Pouch 250gr / Porsi" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-bold text-zinc-700 mb-1">Kategori Produk *</label>
+                                <select id="productFormCategory" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold bg-white">
+                                    <option value="Kuliner">Kuliner</option>
+                                    <option value="Minuman">Minuman</option>
+                                    <option value="Fashion">Fashion</option>
+                                    <option value="Kriya">Kriya</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-zinc-700 mb-1">Label Badge</label>
+                                <input type="text" id="productFormBadge" placeholder="🔥 Terlaris" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                            </div>
+                        </div>
+
+                        <div class="bg-zinc-50 p-3 rounded-2xl border border-zinc-200/80 space-y-2.5">
+                            <label class="block font-bold text-zinc-700">Foto / Gambar Produk</label>
+                            <div class="flex items-center gap-3">
+                                <img id="productFormImagePreview" src="https://placehold.co/200x200/e2e8f0/475569?text=Foto+Produk" alt="Preview Produk" class="w-16 h-16 rounded-2xl object-cover bg-white border border-zinc-200 shrink-0" onerror="this.src='https://placehold.co/200x200/e2e8f0/475569?text=Foto+Produk'">
+                                <div class="flex-1 space-y-2 min-w-0">
+                                    <input type="text" id="productFormImage" oninput="updateProductImagePreview(this.value)" placeholder="Tempel link URL foto produk..." class="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold bg-white">
+                                    <div class="flex items-center gap-2">
+                                        <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-extrabold text-[11px] border border-brand-200 transition-all">
+                                            <i class="fa-solid fa-camera"></i>
+                                            <span>Pilih Foto dari HP/Galeri</span>
+                                            <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'productFormImage', 'productFormImagePreview')">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-zinc-700 mb-1">Deskripsi Produk *</label>
+                            <textarea id="productFormDesc" rows="2" required placeholder="Jelaskan keunggulan produk..." class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold"></textarea>
+                        </div>
+
+                        <button type="submit" id="productFormSubmitBtn" class="w-full py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs shadow-sm transition-all card-pop">
+                            <i class="fa-solid fa-floppy-disk mr-1.5"></i>Simpan Produk
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Daftar Produk untuk Admin + Pencarian -->
+                <div class="lg:col-span-7 space-y-3">
+                    <div class="bg-white p-3.5 rounded-3xl border border-zinc-200 shadow-2xs flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                        <div class="relative flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+                            <input
+                                type="text"
+                                id="adminSearchProductInput"
+                                oninput="renderAdminPanel()"
+                                placeholder="Cari nama produk, nama toko, atau kategori..."
+                                class="w-full pl-9 pr-8 py-2.5 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs font-semibold focus:outline-none focus:border-brand-500 focus:bg-white transition-all"
+                            >
+                            <button id="clearAdminProductSearchBtn" onclick="clearAdminProductSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-zinc-200 text-zinc-600 flex items-center justify-center text-[10px]">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <select id="adminFilterProductStore" onchange="renderAdminPanel()" class="px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs font-bold text-zinc-700 focus:outline-none focus:border-brand-500">
+                            <option value="ALL">Semua Toko</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-3" id="adminProductsList">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-VIEW 3: KELOLA JUDUL WEB & KATEGORI UMKM -->
+            <div id="adminSubViewSettings" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <!-- Kolom Kiri: Pengaturan Judul & Identitas Website -->
+                <div class="lg:col-span-5 bg-white p-5 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
+                    <div class="border-b border-zinc-100 pb-3">
+                        <h2 class="font-display font-extrabold text-base text-zinc-900 flex items-center gap-2">
+                            <i class="fa-solid fa-heading text-brand-600"></i>
+                            <span>Kelola Judul Website</span>
+                        </h2>
+                        <p class="text-[11px] text-zinc-500 mt-0.5">Ubah judul utama, label desa, dan subjudul di beranda</p>
+                    </div>
+
+                    <form id="adminSettingsForm" onsubmit="handleSaveSiteSettings(event)" class="space-y-3.5 text-xs">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-bold text-zinc-700 mb-1">Judul Kata Ke-1 *</label>
+                                <input type="text" id="settingBrandMain" required placeholder="UMKM" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-bold">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-zinc-700 mb-1">Judul Kata Ke-2 (Biru) *</label>
+                                <input type="text" id="settingBrandAccent" required placeholder="Meranti" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-bold text-brand-600">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-zinc-700 mb-1">Label Badge Wilayah / Desa *</label>
+                            <input type="text" id="settingBadgeText" required placeholder="Desa Meranti" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-zinc-700 mb-1">Subjudul Header *</label>
+                            <input type="text" id="settingSubtitle" required placeholder="Direktori Toko, WA & Peta UMKM Desa Meranti" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-zinc-700 mb-1">Judul Baris Kategori *</label>
+                            <input type="text" id="settingCategoryTitle" required placeholder="Kategori UMKM Desa Meranti:" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                        </div>
+
+                        <div>
+                            <label class="block font-bold text-zinc-700 mb-1">Teks Footer Bawah *</label>
+                            <input type="text" id="settingFooterTitle" required placeholder="Direktori Resmi UMKM Desa Meranti 🚀" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold">
+                        </div>
+
+                        <div class="pt-2 border-t border-zinc-100">
+                            <label class="block font-bold text-zinc-700 mb-1"><i class="fa-solid fa-key text-brand-600 mr-1"></i>Kode Rahasia Masuk Admin *</label>
+                            <input type="text" id="settingAdminCode" required placeholder="meranti123" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-200 bg-brand-50/40 focus:bg-white focus:border-brand-500 focus:outline-none font-mono font-extrabold text-brand-700">
+                            <span class="text-[10px] text-zinc-400 block mt-1">Ketik kode ini di kolom pencarian beranda atau ketuk logo 5x untuk masuk ke Admin.</span>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs shadow-sm transition-all card-pop">
+                            <i class="fa-solid fa-floppy-disk mr-1.5"></i>Simpan Pengaturan & Kode
+                        </button>
+                    </form>
+
+                    <!-- Pengaturan Sinkronisasi Otomatis GitHub Pages -->
+                    <div class="pt-4 border-t border-zinc-200 space-y-3">
+                        <div>
+                            <h3 class="font-display font-extrabold text-sm text-zinc-900 flex items-center gap-2">
+                                <i class="fa-brands fa-github text-base text-zinc-900"></i>
+                                <span>Sinkronisasi Otomatis GitHub (Semua Perangkat)</span>
+                            </h3>
+                            <p class="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">
+                                Hubungkan ke repositori GitHub Anda agar setiap tambah/edit toko & produk otomatis tampil di HP semua pengunjung tanpa upload manual.
+                            </p>
+                        </div>
+
+                        <form onsubmit="handleSaveGithubSyncConfig(event)" class="space-y-2.5 text-xs bg-zinc-50 p-3.5 rounded-2xl border border-zinc-200/80">
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="block font-bold text-zinc-700 mb-1">Username GitHub *</label>
+                                    <input type="text" id="ghSyncOwner" required placeholder="contoh: budimeranti" class="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold bg-white">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-zinc-700 mb-1">Nama Repository *</label>
+                                    <input type="text" id="ghSyncRepo" required placeholder="contoh: umkm-meranti" class="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold bg-white">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-zinc-700 mb-1">GitHub Personal Access Token (`ghp_...`) *</label>
+                                <input type="password" id="ghSyncToken" required placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-mono font-semibold bg-white">
+                                <span class="text-[10px] text-zinc-400 block mt-1">Buat gratis di GitHub: <strong>Settings &rarr; Developer settings &rarr; Personal access tokens (Classic) &rarr; centang "repo"</strong>.</span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                                <button type="submit" id="ghSyncSaveBtn" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-xs transition-all card-pop flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    <span>Aktifkan & Sinkronkan</span>
+                                </button>
+                                <button type="button" onclick="exportUpdatedHtmlForGithub()" class="py-2.5 px-3 rounded-xl bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-300 font-extrabold text-xs transition-all card-pop flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Unduh index.html</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Kelola Kategori UMKM -->
+                <div class="lg:col-span-7 bg-white p-5 rounded-3xl border border-zinc-200 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-zinc-100 pb-3">
+                        <div>
+                            <h2 id="adminCategoryFormTitle" class="font-display font-extrabold text-base text-zinc-900 flex items-center gap-2">
+                                <i class="fa-solid fa-tags text-brand-600"></i>
+                                <span>Kelola Kategori UMKM</span>
+                            </h2>
+                            <p class="text-[11px] text-zinc-500 mt-0.5">Tambah, ubah, atau hapus pilihan kategori usaha</p>
+                        </div>
+                        <button id="cancelEditCategoryBtn" onclick="resetCategoryForm()" class="hidden text-xs font-bold text-rose-600 hover:underline">
+                            Batal Edit
+                        </button>
+                    </div>
+
+                    <form id="adminCategoryForm" onsubmit="handleSaveCategory(event)" class="space-y-3 text-xs bg-zinc-50 p-3.5 rounded-2xl border border-zinc-200/80">
+                        <input type="hidden" id="categoryEditOldId">
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                            <div class="sm:col-span-3">
+                                <label class="block font-bold text-zinc-700 mb-1">Emoji Terpilih</label>
+                                <input type="text" id="categoryFormEmoji" required placeholder="🍜" maxlength="4" class="w-full px-3 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none text-center text-base font-bold bg-white">
+                            </div>
+                            <div class="sm:col-span-6">
+                                <label class="block font-bold text-zinc-700 mb-1">Nama Kategori UMKM *</label>
+                                <input type="text" id="categoryFormName" required placeholder="Contoh: Pertanian / Jasa" class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-semibold bg-white">
+                            </div>
+                            <div class="sm:col-span-3 flex items-end">
+                                <button type="submit" id="categorySubmitBtn" class="w-full py-2.5 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs shadow-xs transition-all card-pop">
+                                    + Simpan
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Pilihan Emoji Banyak (Klik untuk Pilih) -->
+                        <div class="pt-2 border-t border-zinc-200/70">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-[11px] font-bold text-zinc-600"><i class="fa-regular fa-face-smile text-brand-600 mr-1"></i>Pilih Cepat Ikon Emoji UMKM:</span>
+                                <span class="text-[10px] text-zinc-400">Ketuk emoji di bawah</span>
+                            </div>
+                            <div id="emojiPickerGrid" class="grid grid-cols-8 sm:grid-cols-12 gap-1.5 max-h-36 overflow-y-auto p-2 bg-white rounded-xl border border-zinc-200">
+                                <!-- Populated via JS -->
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Daftar Kategori Aktif -->
+                    <div id="adminCategoriesList" class="space-y-2.5">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- End of #adminAppWrapper -->
+
+    <!-- DATA AWAL APLIKASI -->
+    <script id="umkmEmbeddedDataScript">
+        const DATA_VERSION = 'v1';
+
+        const DEFAULT_SETTINGS = {
+            brandMain: 'UMKM',
+            brandAccent: 'Meranti',
+            badgeText: 'Desa Meranti',
+            subtitle: 'Direktori Toko, WA & Peta UMKM Desa Meranti',
+            categoryTitle: 'Kategori UMKM Desa Meranti:',
+            footerTitle: 'Direktori Resmi UMKM Desa Meranti 🚀',
+            adminCode: 'meranti123'
+        };
+
+        const DEFAULT_CATEGORIES = [
+            { id: 'Kuliner', name: 'Kuliner', emoji: '🍜' },
+            { id: 'Minuman', name: 'Minuman', emoji: '☕' },
+            { id: 'Fashion', name: 'Fashion', emoji: '👕' },
+            { id: 'Kriya', name: 'Kriya & Kerajinan', emoji: '🧺' }
+        ];
+
+        const UMKM_EMOJI_LIST = [
+            '🍜','🍲','🍛','🍗','🍖','🍢','🍡','🥟','🍱','🍙','🍚','🍘','🍥','🥮','🍣','🍤','🍔','🍟','🍕','🌭','🥪','🌮','🌯','🥙','🧆','🥚','🍳','🥘','🫕','🥣','🥗','🍿','🧈','🧂','🥫',
+            '☕','🍵','🧃','🥤','🧋','🍶','🍺','🥛','🍯','🧊','🥥','🍋','🍊','🍉','🍍','🥭','🍎','🍏','🍐','🍑','🍒','🍓','🫐','🥝','🍅','🥑',
+            '🥐','🥯','🍞','🥖','🥨','🧀','🥞','🧇','🍰','🎂','🧁','🥧','🍮','🍭','🍬','🍫','🍩','🍪','🌰','🥜',
+            '👕','👚','👗','👘','🥻','🩱','🩲','🩳','👔','🧥','🥼','🦺','👖','🧣','🧤','🧦','🧢','👒','🎩','🎓','👑','🪖','👜','👛','Io','💼','🎒','🧳','👓','🕶️','🥽','👞','👟','🥾','🥿','👠','👡','🩰','👢',
+            '🧺','🧶','🧵','🪡','🪢','🎨','🖼️','🎭','🏺','🪔','🕯️','🪑','🛋️','🪞','🪟','🛏️','🧸','🪆','🪅','🎁','🎀','🎊','🎉','🎈',
+            '🌾','🌿','☘️','🍀','🪴','🌵','🌴','🌳','🌲','🪵','🪨','🌻','🌺','🌸','🌼','🌷','🥀','🌹','💐','🍄','🌰','🎃',
+            '🐟','🐠','🐡','🦈','🐙','🦑','🦐','🦞','🦀','🐚','🦆','🐓','🦃','🐄','🐐','🐑','🐎','🐝','🥚',
+            '🛠️','🔧','🔨','⚒️','🪛','🪚','🪓','🧱','⚙️','🧰','🧲','🪜','🧹','🪣','🧼','🧽','🧴','🛒','🛍️','📦','🚚','🛵','🚲','🚜','🏪','🏡','📍','⭐','🔥','💎'
+        ];
+
+        const DEFAULT_STORES = [
+            {
+                id: 'store-1',
+                name: 'Dapur Bu Rahma Meranti',
+                owner: 'Ibu Rahma Wati',
+                category: 'Kuliner',
+                city: 'Desa Meranti',
+                whatsapp: '6281234567801',
+                address: 'Jl. Poros Dusun I RT 02/RW 01, Desa Meranti',
+                mapQuery: 'Desa Meranti',
+                openHours: '08.00 - 20.00 WIB',
+                rating: 4.9,
+                verified: true,
+                avatar: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80',
+                description: 'Produsen aneka olahan kuliner rumahan, sambal kemasan, dan lauk kering khas Desa Meranti tanpa bahan pengawet.'
+            },
+            {
+                id: 'store-2',
+                name: 'Roastery Kopi Meranti',
+                owner: 'Kang Dedi Pratama',
+                category: 'Minuman',
+                city: 'Desa Meranti',
+                whatsapp: '6281398765402',
+                address: 'Dusun II Krajan RT 04/RW 02, Desa Meranti',
+                mapQuery: 'Kantor Desa Meranti',
+                openHours: '07.00 - 22.00 WIB',
+                rating: 4.8,
+                verified: true,
+                avatar: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80',
+                description: 'Kedai dan rumah sangrai kopi pilihan hasil kebun warga serta minuman herbal segar khas Desa Meranti.'
+            },
+            {
+                id: 'store-3',
+                name: 'Galeri Tenun & Batik Meranti',
+                owner: 'Ibu Sri Wahyuni',
+                category: 'Fashion',
+                city: 'Desa Meranti',
+                whatsapp: '6285711223303',
+                address: 'Jl. Melati Dusun III RT 01/RW 03, Desa Meranti',
+                mapQuery: 'Pasar Desa Meranti',
+                openHours: '08.00 - 17.00 WIB',
+                rating: 5.0,
+                verified: true,
+                avatar: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=600&q=80',
+                description: 'Pengrajin kain batik tulis, kemeja etnik, dan busana kasual karya kelompok ibu-ibu pengrajin Desa Meranti.'
+            },
+            {
+                id: 'store-4',
+                name: 'Kriya Bambu & Rotan Meranti',
+                owner: 'Pak Hendra Wijaya',
+                category: 'Kriya',
+                city: 'Desa Meranti',
+                whatsapp: '6282144556604',
+                address: 'Sentra Kerajinan Dusun IV RT 03/RW 04, Desa Meranti',
+                mapQuery: 'Balai Desa Meranti',
+                openHours: '08.00 - 17.30 WIB',
+                rating: 4.9,
+                verified: true,
+                avatar: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=600&q=80',
+                description: 'Kerajinan tangan anyaman bambu dan rotan berkualitas untuk dekorasi rumah dan perlengkapan dapur.'
+            }
+        ];
+
+        const DEFAULT_PRODUCTS = [
+            {
+                id: 'prod-101',
+                storeId: 'store-1',
+                name: 'Sambal Roa Asap Botol Kaca',
+                category: 'Kuliner',
+                price: 38000,
+                unit: 'Botol 150gr',
+                badge: '🔥 Terlaris',
+                image: 'https://images.unsplash.com/photo-1589187151053-5ec8818e661b?auto=format&fit=crop&w=700&q=80',
+                description: 'Sambal ikan roa asap dimasak perlahan dengan cabai rawit segar dan minyak kelapa murni. Tahan hingga 3 bulan di suhu ruang.'
+            },
+            {
+                id: 'prod-102',
+                storeId: 'store-1',
+                name: 'Keripik Tempe Sagu Renyah',
+                category: 'Kuliner',
+                price: 22000,
+                unit: 'Pouch 200gr',
+                badge: '⭐ Favorit',
+                image: 'https://images.unsplash.com/photo-1621447504864-d8686e12698c?auto=format&fit=crop&w=700&q=80',
+                description: 'Irisan tipis tempe kedelai lokal berbalut tepung sagu dengan bumbu ketumbar dan daun jeruk yang wangi.'
+            },
+            {
+                id: 'prod-103',
+                storeId: 'store-2',
+                name: 'Biji Kopi Arabika Wine Process',
+                category: 'Minuman',
+                price: 75000,
+                unit: 'Pouch 250gr',
+                badge: '💎 Premium',
+                image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=700&q=80',
+                description: 'Biji kopi arabika petik merah pilihan dengan aroma fruity yang kuat. Tersedia dalam bentuk biji utuh maupun giling.'
+            },
+            {
+                id: 'prod-104',
+                storeId: 'store-2',
+                name: 'Wedang Uwuh Rempah Komplit',
+                category: 'Minuman',
+                price: 30000,
+                unit: 'Pack isi 10 Sachet',
+                badge: '🌿 Herbal',
+                image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=700&q=80',
+                description: 'Racikan jahe merah kering, kayu secang, cengkeh, serai, dan gula batu asli untuk menjaga imunitas tubuh.'
+            },
+            {
+                id: 'prod-105',
+                storeId: 'store-3',
+                name: 'Kain Batik Tulis Motif Meranti',
+                category: 'Fashion',
+                price: 245000,
+                unit: 'Potong (2.4m x 1.15m)',
+                badge: '🎨 Eksklusif',
+                image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=700&q=80',
+                description: 'Kain katun primisima halus dengan pewarnaan batik tulis tangan asli karya pengrajin Desa Meranti.'
+            },
+            {
+                id: 'prod-106',
+                storeId: 'store-3',
+                name: 'Outer Tenun Etnik Unisex',
+                category: 'Fashion',
+                price: 165000,
+                unit: 'All Size Fit to XL',
+                badge: '✨ Koleksi Baru',
+                image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=700&q=80',
+                description: 'Cardigan outer kasual dari tenun ikat asli yang nyaman dipakai untuk acara santai maupun formal.'
+            },
+            {
+                id: 'prod-107',
+                storeId: 'store-4',
+                name: 'Keranjang Anyaman Rotan Natural',
+                category: 'Kriya',
+                price: 95000,
+                unit: 'Set isi 2 Pcs',
+                badge: '🏡 Estetik',
+                image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=700&q=80',
+                description: 'Keranjang multifungsi dari rotan alami yang sudah dihaluskan dan dilapisi anti-jamur.'
+            },
+            {
+                id: 'prod-108',
+                storeId: 'store-4',
+                name: 'Lampu Gantung Kap Bambu',
+                category: 'Kriya',
+                price: 120000,
+                unit: 'Diameter 35cm',
+                badge: '💡 Handmade',
+                image: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=700&q=80',
+                description: 'Kap lampu gantung anyaman bambu yang menciptakan bias cahaya hangat dan artistik di ruang tamu.'
+            }
+        ];
+
+        // State Aplikasi
+        let stores = [...DEFAULT_STORES];
+        let products = [...DEFAULT_PRODUCTS];
+        let categories = [...DEFAULT_CATEGORIES];
+        let siteSettings = { ...DEFAULT_SETTINGS };
+        let activeCategory = 'ALL';
+        let activeMainTab = 'products';
+        let selectedStoreForMap = stores.length > 0 ? stores[0].id : null;
+        let logoTapCount = 0;
+        let logoTapTimer = null;
+
+        // Konfigurasi Auto-Sync GitHub (Otomatis mendeteksi jika dibuka dari *.github.io)
+        let githubSyncConfig = {
+            owner: '',
+            repo: '',
+            token: ''
+        };
+
+        function autoDetectGithubPagesRepo() {
+            const host = window.location.hostname;
+            const pathParts = window.location.pathname.split('/').filter(Boolean);
+            if (host.endsWith('.github.io')) {
+                githubSyncConfig.owner = host.replace('.github.io', '');
+                if (pathParts.length > 0) {
+                    githubSyncConfig.repo = pathParts[0];
+                } else {
+                    githubSyncConfig.repo = `${githubSyncConfig.owner}.github.io`;
+                }
+            }
+        }
+
+        // ==========================================
+        // SINKRONISASI DATA LINTAS PERANGKAT OTOMATIS
+        // ==========================================
+        async function loadData() {
+            autoDetectGithubPagesRepo();
+
+            // 1. Jika memiliki info repo GitHub, ambil data real-time langsung dari GitHub API / file JSON
+            if (githubSyncConfig.owner && githubSyncConfig.repo) {
+                try {
+                    const apiUrl = `https://api.github.com/repos/${githubSyncConfig.owner}/${githubSyncConfig.repo}/contents/data-umkm.json?t=${Date.now()}`;
+                    const res = await fetch(apiUrl, {
+                        headers: { 'Accept': 'application/vnd.github.v3.raw' },
+                        cache: 'no-store'
+                    });
+                    if (res.ok) {
+                        const remoteData = await res.json();
+                        applyLoadedCatalogData(remoteData);
+                        return;
+                    }
+                } catch (e) {
+                    // Lanjut ke fallback file relatif
+                }
+            }
+
+            // 2. Fallback ambil data-umkm.json dari folder hosting yang sama
+            try {
+                const res = await fetch(`./data-umkm.json?t=${Date.now()}`, { cache: 'no-store' });
+                if (res.ok) {
+                    const remoteData = await res.json();
+                    applyLoadedCatalogData(remoteData);
+                }
+            } catch (e) {
+                // Gunakan data bawaan jika belum ada file data-umkm.json
+            }
+
+            if (stores.length > 0 && !selectedStoreForMap) {
+                selectedStoreForMap = stores[0].id;
+            }
+        }
+
+        function applyLoadedCatalogData(remoteData) {
+            if (!remoteData || typeof remoteData !== 'object') return;
+            if (Array.isArray(remoteData.stores)) stores = remoteData.stores;
+            if (Array.isArray(remoteData.products)) products = remoteData.products;
+            if (Array.isArray(remoteData.categories)) categories = remoteData.categories;
+            if (remoteData.siteSettings) siteSettings = { ...DEFAULT_SETTINGS, ...remoteData.siteSettings };
+            if (stores.length > 0 && !selectedStoreForMap) {
+                selectedStoreForMap = stores[0].id;
+            }
+            applySiteSettingsToDOM();
+            renderCategoryPills();
+            handleFilterChange();
+            if (!document.getElementById('adminAppWrapper')?.classList.contains('hidden')) {
+                renderAdminPanel();
+            }
+        }
+
+        async function pushDataToGithubRepo() {
+            if (!githubSyncConfig.owner || !githubSyncConfig.repo || !githubSyncConfig.token) {
+                return false;
+            }
+
+            const badge = document.getElementById('cloudSyncStatusBadge');
+            if (badge) {
+                badge.textContent = 'Menyimpan ke GitHub...';
+                badge.className = 'text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full';
+            }
+
+            try {
+                const path = 'data-umkm.json';
+                const apiUrl = `https://api.github.com/repos/${githubSyncConfig.owner}/${githubSyncConfig.repo}/contents/${path}`;
+                const headers = {
+                    'Authorization': `Bearer ${githubSyncConfig.token}`,
+                    'Accept': 'application/vnd.github+json',
+                    'Content-Type': 'application/json'
+                };
+
+                // Cek apakah file data-umkm.json sudah ada untuk mendapatkan SHA
+                let existingSha = null;
+                const getRes = await fetch(apiUrl, { headers, cache: 'no-store' });
+                if (getRes.ok) {
+                    const fileInfo = await getRes.json();
+                    existingSha = fileInfo.sha;
+                }
+
+                const payloadObj = {
+                    stores,
+                    products,
+                    categories,
+                    siteSettings,
+                    updatedAt: new Date().toISOString()
+                };
+
+                const jsonString = JSON.stringify(payloadObj, null, 2);
+                const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
+
+                const bodyData = {
+                    message: 'Update otomatis data UMKM Desa Meranti',
+                    content: base64Content
+                };
+                if (existingSha) bodyData.sha = existingSha;
+
+                const putRes = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(bodyData)
+                });
+
+                if (putRes.ok) {
+                    if (badge) {
+                        badge.textContent = 'GitHub Tersinkron ✓';
+                        badge.className = 'text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full';
+                    }
+                    return true;
+                } else {
+                    throw new Error('Gagal menulis ke repositori GitHub');
+                }
+            } catch (err) {
+                if (badge) {
+                    badge.textContent = 'Gagal Sync GitHub';
+                    badge.className = 'text-[10px] font-extrabold bg-rose-500/20 text-rose-300 border border-rose-400/30 px-2 py-0.5 rounded-full';
+                }
+                return false;
+            }
+        }
+
+        async function handleSaveGithubSyncConfig(e) {
+            e.preventDefault();
+            githubSyncConfig.owner = document.getElementById('ghSyncOwner').value.trim();
+            githubSyncConfig.repo = document.getElementById('ghSyncRepo').value.trim();
+            githubSyncConfig.token = document.getElementById('ghSyncToken').value.trim();
+
+            const btn = document.getElementById('ghSyncSaveBtn');
+            if (btn) btn.textContent = 'Menghubungkan...';
+
+            const ok = await pushDataToGithubRepo();
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>Aktifkan & Sinkronkan</span>';
+
+            if (ok) {
+                showToast('Berhasil! Sekarang setiap perubahan otomatis tersimpan ke GitHub & tampil di semua perangkat.', 'success');
+            } else {
+                showToast('Gagal terhubung ke GitHub. Periksa kembali Username, Nama Repo, dan Token Anda.', 'error');
+            }
+        }
+
+        function saveData() {
+            if (typeof window.syncAllDataToCloud === 'function') {
+                window.syncAllDataToCloud();
+            }
+            if (githubSyncConfig.token) {
+                pushDataToGithubRepo();
+            }
+        }
+
+        function exportUpdatedHtmlForGithub() {
+            try {
+                let fullHtml = document.documentElement.outerHTML;
+                if (!fullHtml.toLowerCase().startsWith('<!doctype html>')) {
+                    fullHtml = '<!DOCTYPE html>\n' + fullHtml;
+                }
+
+                // Pastikan tampilan pelanggan yang terbuka saat file dibuka orang lain
+                fullHtml = fullHtml.replace(
+                    /<div id="customerAppWrapper" class="([^"]*)"/,
+                    '<div id="customerAppWrapper" class="flex-1 flex flex-col max-w-3xl w-full mx-auto"'
+                );
+                fullHtml = fullHtml.replace(
+                    /<div id="adminAppWrapper" class="([^"]*)"/,
+                    '<div id="adminAppWrapper" class="hidden flex-1 flex flex-col max-w-4xl w-full mx-auto pb-16"'
+                );
+
+                // Tanamkan data terbaru langsung ke dalam variabel DEFAULT di file index.html
+                fullHtml = fullHtml.replace(
+                    /const DEFAULT_SETTINGS = [\s\S]*?;\n\n\s*const DEFAULT_CATEGORIES/,
+                    `const DEFAULT_SETTINGS = ${JSON.stringify(siteSettings, null, 4)};\n\n        const DEFAULT_CATEGORIES`
+                );
+                fullHtml = fullHtml.replace(
+                    /const DEFAULT_CATEGORIES = [\s\S]*?;\n\n\s*const UMKM_EMOJI_LIST/,
+                    `const DEFAULT_CATEGORIES = ${JSON.stringify(categories, null, 4)};\n\n        const UMKM_EMOJI_LIST`
+                );
+                fullHtml = fullHtml.replace(
+                    /const DEFAULT_STORES = [\s\S]*?;\n\n\s*const DEFAULT_PRODUCTS/,
+                    `const DEFAULT_STORES = ${JSON.stringify(stores, null, 4)};\n\n        const DEFAULT_PRODUCTS`
+                );
+                fullHtml = fullHtml.replace(
+                    /const DEFAULT_PRODUCTS = [\s\S]*?;\n\n\s*\/\/ State Aplikasi/,
+                    `const DEFAULT_PRODUCTS = ${JSON.stringify(products, null, 4)};\n\n        // State Aplikasi`
+                );
+
+                const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'index.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showToast('File index.html terbaru berhasil diunduh! Silakan upload ke GitHub.', 'success');
+            } catch (err) {
+                showToast('Gagal mengekspor file HTML.', 'error');
+            }
+        }
+
+        // ==========================================
+        // HELPER NOMOR HP, WA & JAM OPERASIONAL
+        // ==========================================
+        function formatLocalPhone(rawPhone) {
+            if (!rawPhone) return '-';
+            let digits = String(rawPhone).replace(/\D/g, '');
+            if (digits.startsWith('62')) {
+                digits = '0' + digits.slice(2);
+            } else if (digits.startsWith('8')) {
+                digits = '0' + digits;
+            }
+            if (digits.length > 8) {
+                return digits.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3');
+            }
+            return digits;
+        }
+
+        function normalizeWaNumber(rawPhone) {
+            if (!rawPhone) return '';
+            let digits = String(rawPhone).replace(/\D/g, '');
+            if (digits.startsWith('0')) {
+                digits = '62' + digits.slice(1);
+            } else if (digits.startsWith('8')) {
+                digits = '62' + digits;
+            }
+            return digits;
+        }
+
+        function formatRupiah(num) {
+            return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
+        }
+
+        function getCategoryDisplay(catId) {
+            const found = categories.find(c => c.id.toLowerCase() === String(catId || '').toLowerCase());
+            if (found) return `${found.emoji} ${found.name}`;
+            return `🏷️ ${catId || 'UMKM'}`;
+        }
+
+        function checkStoreIsOpenNow(openHoursStr) {
+            if (!openHoursStr) return false;
+            const lower = openHoursStr.toLowerCase();
+            if (lower.includes('24 jam')) return true;
+            if (lower.includes('tutup') || lower.includes('libur')) return false;
+
+            const match = openHoursStr.match(/(\d{1,2})[.:](\d{2})\s*-\s*(\d{1,2})[.:](\d{2})/);
+            if (!match) return true;
+
+            const openHour = parseInt(match[1], 10);
+            const openMin = parseInt(match[2], 10);
+            const closeHour = parseInt(match[3], 10);
+            const closeMin = parseInt(match[4], 10);
+
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const startMinutes = openHour * 60 + openMin;
+            const endMinutes = closeHour * 60 + closeMin;
+
+            if (endMinutes >= startMinutes) {
+                return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+            } else {
+                return currentMinutes >= startMinutes || currentMinutes <= endMinutes;
+            }
+        }
+
+        function updateLiveClock() {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const clockEl = document.getElementById('liveClockDisplay');
+            if (clockEl) {
+                clockEl.textContent = `${hh}:${mm} WIB`;
+            }
+            const openCount = stores.filter(s => checkStoreIsOpenNow(s.openHours)).length;
+            const bottomBadge = document.getElementById('bottomNavOpenBadge');
+            if (bottomBadge) bottomBadge.textContent = openCount;
+        }
+
+        // ==========================================
+        // RENDER IDENTITAS & KATEGORI PELANGGAN
+        // ==========================================
+        function applySiteSettingsToDOM() {
+            const setTxt = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && val) el.textContent = val;
+            };
+            setTxt('headerBrandMain', siteSettings.brandMain);
+            setTxt('headerBrandAccent', siteSettings.brandAccent);
+            setTxt('headerBadgeText', siteSettings.badgeText);
+            setTxt('headerSubtitle', siteSettings.subtitle);
+            setTxt('categorySectionLabel', siteSettings.categoryTitle);
+            setTxt('footerMainTitle', siteSettings.footerTitle);
+            document.title = `${siteSettings.brandMain} ${siteSettings.brandAccent} — ${siteSettings.badgeText}`;
+        }
+
+        function renderCategoryPills() {
+            const container = document.getElementById('desaPillsContainer');
+            if (!container) return;
+
+            const allBtnActive = activeCategory === 'ALL';
+            let html = `
+                <button onclick="selectCategoryFilter('ALL')" class="shrink-0 px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-all flex items-center gap-1.5 card-pop ${allBtnActive ? 'bg-brand-600 text-white shadow-genz' : 'bg-white text-zinc-700 border border-zinc-200 hover:border-brand-300'}">
+                    <span>🔥</span>
+                    <span>Semua UMKM</span>
+                </button>
+            `;
+
+            categories.forEach(cat => {
+                const isActive = activeCategory === cat.id;
+                html += `
+                    <button onclick="selectCategoryFilter('${cat.id.replace(/'/g, "\\'")}')" class="shrink-0 px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-all flex items-center gap-1.5 card-pop ${isActive ? 'bg-brand-600 text-white shadow-genz' : 'bg-white text-zinc-700 border border-zinc-200 hover:border-brand-300'}">
+                        <span>${cat.emoji}</span>
+                        <span>${cat.name}</span>
+                    </button>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function selectCategoryFilter(catId) {
+            activeCategory = catId;
+            renderCategoryPills();
+            handleFilterChange();
+        }
+
+        // ==========================================
+        // RENDER BERANDA TOKO (3 KOLOM) & PENCARIAN
+        // ==========================================
+        function createStoreCardHTML(store) {
+            const isOpen = checkStoreIsOpenNow(store.openHours);
+            const storeProductsCount = products.filter(p => p.storeId === store.id).length;
+            const catLabel = getCategoryDisplay(store.category);
+
+            return `
+                <div onclick="openStoreEtalaseModal('${store.id}')" class="bg-white rounded-2xl sm:rounded-3xl border border-zinc-200/90 hover:border-brand-400 shadow-2xs hover:shadow-md transition-all overflow-hidden flex flex-col cursor-pointer card-pop">
+                    <div class="relative aspect-square w-full bg-zinc-100 overflow-hidden">
+                        <img src="${store.avatar}" alt="${store.name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x300/dbeafe/1d4ed8?text=Toko+UMKM'">
+                        <div class="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between gap-1">
+                            <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold backdrop-blur-md shadow-2xs ${isOpen ? 'bg-emerald-500/95 text-white' : 'bg-zinc-900/80 text-zinc-200'}">
+                                ${isOpen ? '● Buka' : 'Tutup'}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-white/90 text-brand-700 backdrop-blur-md shadow-2xs">
+                                ${storeProductsCount} Produk
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="p-2.5 sm:p-3.5 flex-1 flex flex-col justify-between gap-1.5">
+                        <div>
+                            <span class="inline-block text-[9px] sm:text-[10px] font-extrabold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md mb-1 truncate max-w-full">
+                                ${catLabel}
+                            </span>
+                            <h3 class="font-display font-extrabold text-zinc-900 text-xs sm:text-sm leading-snug line-clamp-2">
+                                ${store.name}
+                            </h3>
+                        </div>
+
+                        <div class="pt-1.5 border-t border-zinc-100 flex items-center justify-between text-[10px] sm:text-[11px] text-zinc-500 font-semibold">
+                            <span class="truncate"><i class="fa-regular fa-clock text-brand-600 mr-1"></i>${store.openHours}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleFilterChange() {
+            const searchInput = document.getElementById('searchInput');
+            const rawQuery = searchInput ? searchInput.value.trim() : '';
+            const query = rawQuery.toLowerCase();
+
+            // Cek Kode Rahasia Admin langsung dari kolom pencarian
+            const secretCode = (siteSettings.adminCode || 'meranti123').toLowerCase();
+            if (query === secretCode) {
+                searchInput.value = '';
+                document.getElementById('clearSearchBtn')?.classList.add('hidden');
+                switchAppMode('admin');
+                showToast('Berhasil masuk ke Panel Admin Desa!', 'success');
+                return;
+            }
+            if (query === '#admin') {
+                searchInput.value = '';
+                document.getElementById('clearSearchBtn')?.classList.add('hidden');
+                openAdminAuthModal();
+                return;
+            }
+
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (clearBtn) {
+                clearBtn.classList.toggle('hidden', rawQuery.length === 0);
+            }
+
+            // Filter Toko
+            const filteredStores = stores.filter(store => {
+                const matchCategory = activeCategory === 'ALL' || store.category.toLowerCase() === activeCategory.toLowerCase();
+                if (!matchCategory) return false;
+                if (!query) return true;
+
+                const storeProducts = products.filter(p => p.storeId === store.id);
+                const hasMatchingProduct = storeProducts.some(p =>
+                    p.name.toLowerCase().includes(query) ||
+                    p.description.toLowerCase().includes(query)
+                );
+
+                return (
+                    store.name.toLowerCase().includes(query) ||
+                    store.owner.toLowerCase().includes(query) ||
+                    store.category.toLowerCase().includes(query) ||
+                    store.address.toLowerCase().includes(query) ||
+                    hasMatchingProduct
+                );
+            });
+
+            const storesGrid = document.getElementById('homeStoreProfilesGrid');
+            const emptyState = document.getElementById('emptyStoresState');
+            const countBadge = document.getElementById('storeCountBadge');
+
+            if (countBadge) countBadge.textContent = `${filteredStores.length} Toko`;
+
+            if (storesGrid) {
+                if (filteredStores.length === 0) {
+                    storesGrid.innerHTML = '';
+                    emptyState?.classList.remove('hidden');
+                } else {
+                    emptyState?.classList.add('hidden');
+                    storesGrid.innerHTML = filteredStores.map(s => createStoreCardHTML(s)).join('');
+                }
+            }
+
+            // Tampilkan Hasil Pencarian Produk jika pengguna mengetik di kotak pencarian
+            const searchProductsSection = document.getElementById('searchProductsSection');
+            const searchProductsGrid = document.getElementById('searchProductsGrid');
+            const searchProductCount = document.getElementById('searchProductCount');
+
+            if (query.length > 0 && searchProductsSection && searchProductsGrid) {
+                const matchedProducts = products.filter(p => {
+                    const store = stores.find(s => s.id === p.storeId);
+                    const matchCat = activeCategory === 'ALL' ||
+                        p.category.toLowerCase() === activeCategory.toLowerCase() ||
+                        (store && store.category.toLowerCase() === activeCategory.toLowerCase());
+                    if (!matchCat) return false;
+
+                    return (
+                        p.name.toLowerCase().includes(query) ||
+                        p.description.toLowerCase().includes(query) ||
+                        p.category.toLowerCase().includes(query) ||
+                        (store && store.name.toLowerCase().includes(query))
+                    );
+                });
+
+                searchProductsSection.classList.remove('hidden');
+                if (searchProductCount) searchProductCount.textContent = matchedProducts.length;
+
+                if (matchedProducts.length === 0) {
+                    searchProductsGrid.innerHTML = `
+                        <div class="col-span-full text-center py-4 text-xs text-zinc-500">
+                            Tidak ada produk dengan kata kunci "<strong>${rawQuery}</strong>".
+                        </div>
+                    `;
+                } else {
+                    searchProductsGrid.innerHTML = matchedProducts.map(prod => {
+                        const store = stores.find(s => s.id === prod.storeId);
+                        return `
+                            <div onclick="openProductDetailModal('${prod.id}')" class="flex items-center gap-3 p-2.5 rounded-2xl border border-zinc-200 hover:border-brand-400 bg-zinc-50/60 hover:bg-white cursor-pointer transition-all card-pop">
+                                <img src="${prod.image}" alt="${prod.name}" class="w-16 h-16 rounded-xl object-cover bg-zinc-100 shrink-0" onerror="this.src='https://placehold.co/200x200/dbeafe/1d4ed8?text=Produk'">
+                                <div class="min-w-0 flex-1">
+                                    <span class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md">${store ? store.name : 'Toko UMKM'}</span>
+                                    <h4 class="font-display font-bold text-zinc-900 text-xs sm:text-sm truncate mt-0.5">${prod.name}</h4>
+                                    <div class="flex items-center justify-between mt-1">
+                                        <span class="font-display font-extrabold text-brand-700 text-xs sm:text-sm">${formatRupiah(prod.price)}</span>
+                                        <span class="text-[10px] text-zinc-400 font-semibold">${prod.unit}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } else if (searchProductsSection) {
+                searchProductsSection.classList.add('hidden');
+            }
+
+            renderOpenNowTab();
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.value = '';
+            handleFilterChange();
+        }
+
+        function resetAllFilters() {
+            activeCategory = 'ALL';
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.value = '';
+            renderCategoryPills();
+            handleFilterChange();
+        }
+
+        // ==========================================
+        // TAB BUKA SEKARANG & PETA UMKM
+        // ==========================================
+        function renderOpenNowTab() {
+            updateLiveClock();
+            const openGrid = document.getElementById('openNowStoresGrid');
+            const closedGrid = document.getElementById('closedNowStoresGrid');
+            const closedWrapper = document.getElementById('closedStoresWrapper');
+            const openBadge = document.getElementById('openStoreCountBadge');
+
+            if (!openGrid) return;
+
+            const filteredByCat = stores.filter(s => activeCategory === 'ALL' || s.category.toLowerCase() === activeCategory.toLowerCase());
+            const openStores = filteredByCat.filter(s => checkStoreIsOpenNow(s.openHours));
+            const closedStores = filteredByCat.filter(s => !checkStoreIsOpenNow(s.openHours));
+
+            if (openBadge) openBadge.textContent = `${openStores.length} Toko Buka`;
+
+            if (openStores.length === 0) {
+                openGrid.innerHTML = `
+                    <div class="col-span-full bg-white border border-zinc-200 rounded-3xl p-6 text-center text-xs text-zinc-500">
+                        Belum ada toko pada kategori ini yang sedang buka saat ini.
+                    </div>
+                `;
+            } else {
+                openGrid.innerHTML = openStores.map(s => createStoreCardHTML(s)).join('');
+            }
+
+            if (closedWrapper && closedGrid) {
+                if (closedStores.length > 0) {
+                    closedWrapper.classList.remove('hidden');
+                    closedGrid.innerHTML = closedStores.map(s => createStoreCardHTML(s)).join('');
+                } else {
+                    closedWrapper.classList.add('hidden');
+                }
+            }
+        }
+
+        function renderStoresMapTab() {
+            const listContainer = document.getElementById('storeListContainer');
+            const detailContainer = document.getElementById('storeMapDetailContainer');
+            if (!listContainer || !detailContainer) return;
+
+            if (stores.length === 0) {
+                listContainer.innerHTML = '';
+                detailContainer.innerHTML = '<div class="p-8 text-center text-xs text-zinc-500">Belum ada data toko UMKM.</div>';
+                return;
+            }
+
+            if (!selectedStoreForMap || !stores.some(s => s.id === selectedStoreForMap)) {
+                selectedStoreForMap = stores[0].id;
+            }
+
+            listContainer.innerHTML = stores.map(store => {
+                const isSelected = store.id === selectedStoreForMap;
+                return `
+                    <button onclick="selectStoreOnMapTab('${store.id}')" class="shrink-0 px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-all flex items-center gap-2 card-pop ${isSelected ? 'bg-brand-600 text-white shadow-genz' : 'bg-white text-zinc-700 border border-zinc-200'}">
+                        <i class="fa-solid fa-location-dot ${isSelected ? 'text-white' : 'text-rose-500'}"></i>
+                        <span>${store.name}</span>
+                    </button>
+                `;
+            }).join('');
+
+            const store = stores.find(s => s.id === selectedStoreForMap) || stores[0];
+            const encodedQuery = encodeURIComponent(store.mapQuery || store.address);
+            const mapEmbedUrl = `https://maps.google.com/maps?q=${encodedQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+            const externalMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
+            const waUrl = `https://wa.me/${normalizeWaNumber(store.whatsapp)}?text=${encodeURIComponent(`Halo ${store.name}, saya melihat profil toko Anda di Direktori UMKM Desa Meranti.`)}`;
+
+            detailContainer.innerHTML = `
+                <div class="w-full h-64 sm:h-80 bg-zinc-100">
+                    <iframe class="w-full h-full border-0" loading="lazy" allowfullscreen src="${mapEmbedUrl}"></iframe>
+                </div>
+                <div class="p-4 sm:p-5 space-y-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <span class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-2.5 py-0.5 rounded-full">${getCategoryDisplay(store.category)}</span>
+                            <h3 class="font-display text-base sm:text-lg font-extrabold text-zinc-900 mt-1">${store.name}</h3>
+                            <p class="text-xs text-zinc-500">${store.address}</p>
+                        </div>
+                        <button onclick="openStoreEtalaseModal('${store.id}')" class="shrink-0 px-3.5 py-2 rounded-xl bg-brand-50 text-brand-700 font-extrabold text-xs border border-brand-200">
+                            Lihat Produk
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5 bg-zinc-50 p-3 rounded-2xl border border-zinc-200/80 text-xs">
+                        <div>
+                            <span class="text-[10px] text-zinc-400 font-bold block">Jam Operasional</span>
+                            <span class="font-bold text-zinc-800"><i class="fa-regular fa-clock text-brand-600 mr-1"></i>${store.openHours}</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-zinc-400 font-bold block">Nomor HP / WA</span>
+                            <span class="font-mono font-bold text-zinc-800"><i class="fa-solid fa-phone text-brand-600 mr-1"></i>${formatLocalPhone(store.whatsapp)}</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="${externalMapsUrl}" target="_blank" rel="noopener noreferrer" class="py-3 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm card-pop">
+                            <i class="fa-solid fa-diamond-turn-right"></i>
+                            <span>Petunjuk Arah Maps</span>
+                        </a>
+                        <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm card-pop">
+                            <i class="fa-brands fa-whatsapp text-base"></i>
+                            <span>Hubungi via WA</span>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectStoreOnMapTab(storeId) {
+            selectedStoreForMap = storeId;
+            renderStoresMapTab();
+        }
+
+        function switchMainTab(tab) {
+            activeMainTab = tab;
+            const viewProducts = document.getElementById('viewProducts');
+            const viewOpenNow = document.getElementById('viewOpenNow');
+            const viewStores = document.getElementById('viewStores');
+
+            const btnProducts = document.getElementById('mobileBottomTabProducts');
+            const btnOpenNow = document.getElementById('mobileBottomTabOpenNow');
+
+            viewProducts?.classList.add('hidden');
+            viewOpenNow?.classList.add('hidden');
+            viewStores?.classList.add('hidden');
+
+            const activeBtnClass = 'flex items-center justify-center gap-2 bg-brand-600 text-white py-3 px-4 rounded-2xl font-extrabold text-xs shadow-sm transition-all card-pop';
+            const inactiveBtnClass = 'flex items-center justify-center gap-2 bg-zinc-100 text-zinc-700 py-3 px-4 rounded-2xl font-extrabold text-xs transition-all card-pop';
+
+            if (btnProducts) btnProducts.className = tab === 'products' ? activeBtnClass : inactiveBtnClass;
+            if (btnOpenNow) btnOpenNow.className = tab === 'openNow' ? activeBtnClass : inactiveBtnClass;
+
+            if (tab === 'products') {
+                viewProducts?.classList.remove('hidden');
+                handleFilterChange();
+            } else if (tab === 'openNow') {
+                viewOpenNow?.classList.remove('hidden');
+                renderOpenNowTab();
+            } else if (tab === 'stores') {
+                viewStores?.classList.remove('hidden');
+                renderStoresMapTab();
+            }
+        }
+
+        // ==========================================
+        // MODAL ETALASE TOKO, PETA & DETAIL PRODUK
+        // ==========================================
+        function openStoreEtalaseModal(storeId) {
+            const store = stores.find(s => s.id === storeId);
+            if (!store) return;
+
+            document.getElementById('etalaseStoreImg').src = store.avatar;
+            document.getElementById('etalaseStoreDesa').textContent = getCategoryDisplay(store.category);
+            document.getElementById('etalaseStoreName').textContent = store.name;
+            document.getElementById('etalaseStoreHours').innerHTML = `<i class="fa-regular fa-clock text-brand-600 mr-1"></i>${store.openHours} &bull; <span class="font-mono">${formatLocalPhone(store.whatsapp)}</span>`;
+            document.getElementById('etalaseStoreAddress').textContent = store.address;
+
+            const storeProducts = products.filter(p => p.storeId === store.id);
+            const listEl = document.getElementById('etalaseProductsList');
+
+            if (storeProducts.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-8 text-xs text-zinc-500">
+                        Belum ada produk di etalase toko ini. Silakan hubungi toko langsung melalui WhatsApp.
+                    </div>
+                `;
+            } else {
+                listEl.innerHTML = storeProducts.map(prod => `
+                    <div onclick="openProductDetailModal('${prod.id}')" class="bg-white p-3 rounded-2xl border border-zinc-200/90 hover:border-brand-400 flex items-center gap-3.5 cursor-pointer transition-all card-pop">
+                        <img src="${prod.image}" alt="${prod.name}" class="w-18 h-18 sm:w-20 sm:h-20 rounded-xl object-cover bg-zinc-100 shrink-0" style="width: 4.5rem; height: 4.5rem;" onerror="this.src='https://placehold.co/200x200/dbeafe/1d4ed8?text=Produk'">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-1.5 mb-0.5">
+                                ${prod.badge ? `<span class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md">${prod.badge}</span>` : ''}
+                                <span class="text-[10px] text-zinc-400 font-semibold">${prod.unit}</span>
+                            </div>
+                            <h4 class="font-display font-bold text-zinc-900 text-sm truncate">${prod.name}</h4>
+                            <p class="text-xs text-zinc-500 line-clamp-1 mt-0.5">${prod.description}</p>
+                            <div class="flex items-center justify-between mt-1.5">
+                                <span class="font-display font-extrabold text-brand-700 text-sm">${formatRupiah(prod.price)}</span>
+                                <span class="text-[11px] font-extrabold text-brand-600">Detail &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const mapBtn = document.getElementById('etalaseMapBtn');
+            mapBtn.onclick = () => {
+                closeStoreEtalaseModal();
+                openMapModal(store.id);
+            };
+
+            const waBtn = document.getElementById('etalaseWaBtn');
+            const waText = encodeURIComponent(`Halo ${store.name}, saya melihat profil toko Anda di Direktori UMKM Desa Meranti.`);
+            waBtn.href = `https://wa.me/${normalizeWaNumber(store.whatsapp)}?text=${waText}`;
+
+            document.getElementById('storeEtalaseModal').classList.remove('hidden');
+        }
+
+        function closeStoreEtalaseModal() {
+            document.getElementById('storeEtalaseModal').classList.add('hidden');
+        }
+
+        function openMapModal(storeId) {
+            const store = stores.find(s => s.id === storeId);
+            if (!store) return;
+
+            document.getElementById('modalStoreName').textContent = store.name;
+            document.getElementById('modalStoreCategory').textContent = `${getCategoryDisplay(store.category)} • Pemilik: ${store.owner}`;
+            document.getElementById('modalStoreAddress').textContent = store.address;
+            document.getElementById('modalStoreHours').textContent = store.openHours;
+            document.getElementById('modalStorePhone').textContent = formatLocalPhone(store.whatsapp);
+
+            const encodedQuery = encodeURIComponent(store.mapQuery || store.address);
+            document.getElementById('modalMapIframe').src = `https://maps.google.com/maps?q=${encodedQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+            document.getElementById('modalGoogleMapsExternalLink').href = `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
+
+            document.getElementById('mapModal').classList.remove('hidden');
+        }
+
+        function closeMapModal() {
+            document.getElementById('mapModal').classList.add('hidden');
+            document.getElementById('modalMapIframe').src = '';
+        }
+
+        function openProductDetailModal(productId) {
+            const prod = products.find(p => p.id === productId);
+            if (!prod) return;
+            const store = stores.find(s => s.id === prod.storeId);
+
+            document.getElementById('detailProductImg').src = prod.image;
+            document.getElementById('detailProductCategory').textContent = getCategoryDisplay(prod.category);
+            const badgeEl = document.getElementById('detailProductBadge');
+            if (prod.badge) {
+                badgeEl.textContent = prod.badge;
+                badgeEl.classList.remove('hidden');
+            } else {
+                badgeEl.classList.add('hidden');
+            }
+
+            document.getElementById('detailProductName').textContent = prod.name;
+            document.getElementById('detailProductUnit').textContent = `Kemasan: ${prod.unit}`;
+            document.getElementById('detailProductPrice').textContent = formatRupiah(prod.price);
+            document.getElementById('detailProductDesc').textContent = prod.description;
+
+            if (store) {
+                document.getElementById('detailStoreName').textContent = store.name;
+                document.getElementById('detailStoreCity').textContent = getCategoryDisplay(store.category);
+                document.getElementById('detailStoreAddress').textContent = store.address;
+                document.getElementById('detailStoreHours').textContent = store.openHours;
+                document.getElementById('detailStoreWa').textContent = formatLocalPhone(store.whatsapp);
+
+                const msg = encodeURIComponent(`Halo ${store.name}, saya tertarik dengan produk *${prod.name}* (${formatRupiah(prod.price)} / ${prod.unit}) di UMKM Desa Meranti. Apakah masih tersedia?`);
+                document.getElementById('detailOrderWaBtn').href = `https://wa.me/${normalizeWaNumber(store.whatsapp)}?text=${msg}`;
+            }
+
+            document.getElementById('productDetailModal').classList.remove('hidden');
+        }
+
+        function closeProductDetailModal() {
+            document.getElementById('productDetailModal').classList.add('hidden');
+        }
+
+        // ==========================================
+        // AKSES RAHASIA ADMIN & ADMIN PANEL LOGIC
+        // ==========================================
+        function handleHeaderLogoTap() {
+            logoTapCount++;
+            clearTimeout(logoTapTimer);
+            logoTapTimer = setTimeout(() => {
+                logoTapCount = 0;
+            }, 1800);
+
+            if (logoTapCount >= 5) {
+                logoTapCount = 0;
+                openAdminAuthModal();
+            }
+        }
+
+        function openAdminAuthModal() {
+            const modal = document.getElementById('adminAuthModal');
+            const input = document.getElementById('adminSecretCodeInput');
+            if (modal) modal.classList.remove('hidden');
+            if (input) {
+                input.value = '';
+                setTimeout(() => input.focus(), 100);
+            }
+        }
+
+        function closeAdminAuthModal() {
+            document.getElementById('adminAuthModal')?.classList.add('hidden');
+        }
+
+        function handleAdminCodeSubmit(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('adminSecretCodeInput').value.trim();
+            const validCode = siteSettings.adminCode || 'meranti123';
+            if (inputVal.toLowerCase() === validCode.toLowerCase()) {
+                closeAdminAuthModal();
+                switchAppMode('admin');
+                showToast('Selamat datang di Panel Admin UMKM Desa Meranti!', 'success');
+            } else {
+                showToast('Kode rahasia salah!', 'error');
+            }
+        }
+
+        function switchAppMode(mode) {
+            const customerWrap = document.getElementById('customerAppWrapper');
+            const adminWrap = document.getElementById('adminAppWrapper');
+
+            if (mode === 'admin') {
+                customerWrap?.classList.add('hidden');
+                adminWrap?.classList.remove('hidden');
+                renderAdminPanel();
+            } else {
+                adminWrap?.classList.add('hidden');
+                customerWrap?.classList.remove('hidden');
+                applySiteSettingsToDOM();
+                renderCategoryPills();
+                handleFilterChange();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchAdminSubTab(subTab) {
+            const storesView = document.getElementById('adminSubViewStores');
+            const productsView = document.getElementById('adminSubViewProducts');
+            const settingsView = document.getElementById('adminSubViewSettings');
+
+            const btnStores = document.getElementById('adminTabBtnStores');
+            const btnProducts = document.getElementById('adminTabBtnProducts');
+            const btnSettings = document.getElementById('adminTabBtnSettings');
+
+            const activeClass = 'px-4 py-2.5 rounded-xl text-xs font-extrabold bg-white text-zinc-900 shadow-xs transition-all';
+            const inactiveClass = 'px-4 py-2.5 rounded-xl text-xs font-extrabold text-zinc-600 hover:text-zinc-900 transition-all';
+
+            storesView?.classList.add('hidden');
+            productsView?.classList.add('hidden');
+            settingsView?.classList.add('hidden');
+
+            if (btnStores) btnStores.className = inactiveClass;
+            if (btnProducts) btnProducts.className = inactiveClass;
+            if (btnSettings) btnSettings.className = inactiveClass;
+
+            if (subTab === 'stores') {
+                storesView?.classList.remove('hidden');
+                if (btnStores) btnStores.className = activeClass;
+            } else if (subTab === 'products') {
+                productsView?.classList.remove('hidden');
+                if (btnProducts) btnProducts.className = activeClass;
+            } else if (subTab === 'settings') {
+                settingsView?.classList.remove('hidden');
+                if (btnSettings) btnSettings.className = activeClass;
+            }
+            renderAdminPanel();
+        }
+
+        function renderAdminPanel() {
+            // Statistik
+            const statStores = document.getElementById('adminStatStores');
+            const statProducts = document.getElementById('adminStatProducts');
+            const statOpen = document.getElementById('adminStatOpen');
+
+            if (statStores) statStores.textContent = stores.length;
+            if (statProducts) statProducts.textContent = products.length;
+            if (statOpen) statOpen.textContent = stores.filter(s => checkStoreIsOpenNow(s.openHours)).length;
+
+            // Populate Category Selects
+            const catOptionsHtml = categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+            const storeFormCat = document.getElementById('storeFormCategory');
+            const prodFormCat = document.getElementById('productFormCategory');
+            if (storeFormCat) {
+                const currentVal = storeFormCat.value;
+                storeFormCat.innerHTML = catOptionsHtml;
+                if (currentVal) storeFormCat.value = currentVal;
+            }
+            if (prodFormCat) {
+                const currentVal = prodFormCat.value;
+                prodFormCat.innerHTML = catOptionsHtml;
+                if (currentVal) prodFormCat.value = currentVal;
+            }
+
+            const filterStoreCat = document.getElementById('adminFilterStoreCategory');
+            if (filterStoreCat) {
+                const currentVal = filterStoreCat.value || 'ALL';
+                filterStoreCat.innerHTML = `<option value="ALL">Semua Kategori</option>` + catOptionsHtml;
+                filterStoreCat.value = currentVal;
+            }
+
+            // Populate Store Selects in Product Form & Filter
+            const storeOptionsHtml = stores.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            const prodStoreSelect = document.getElementById('productFormStoreId');
+            if (prodStoreSelect) {
+                const currentVal = prodStoreSelect.value;
+                prodStoreSelect.innerHTML = storeOptionsHtml;
+                if (currentVal) prodStoreSelect.value = currentVal;
+            }
+            const adminFilterProdStore = document.getElementById('adminFilterProductStore');
+            if (adminFilterProdStore) {
+                const currentVal = adminFilterProdStore.value || 'ALL';
+                adminFilterProdStore.innerHTML = `<option value="ALL">Semua Toko</option>` + storeOptionsHtml;
+                adminFilterProdStore.value = currentVal;
+            }
+
+            // Render Daftar Toko di Admin
+            const storeQuery = (document.getElementById('adminSearchStoreInput')?.value || '').trim().toLowerCase();
+            const storeCatFilter = document.getElementById('adminFilterStoreCategory')?.value || 'ALL';
+            document.getElementById('clearAdminStoreSearchBtn')?.classList.toggle('hidden', storeQuery.length === 0);
+
+            const filteredAdminStores = stores.filter(s => {
+                const matchCat = storeCatFilter === 'ALL' || s.category.toLowerCase() === storeCatFilter.toLowerCase();
+                if (!matchCat) return false;
+                if (!storeQuery) return true;
+                return (
+                    s.name.toLowerCase().includes(storeQuery) ||
+                    s.owner.toLowerCase().includes(storeQuery) ||
+                    s.address.toLowerCase().includes(storeQuery) ||
+                    formatLocalPhone(s.whatsapp).includes(storeQuery)
+                );
+            });
+
+            const adminStoresList = document.getElementById('adminStoresList');
+            if (adminStoresList) {
+                if (filteredAdminStores.length === 0) {
+                    adminStoresList.innerHTML = `<div class="bg-white p-6 rounded-3xl border border-zinc-200 text-center text-xs text-zinc-500">Toko tidak ditemukan.</div>`;
+                } else {
+                    adminStoresList.innerHTML = filteredAdminStores.map(store => {
+                        const prodCount = products.filter(p => p.storeId === store.id).length;
+                        return `
+                            <div class="bg-white p-4 rounded-3xl border border-zinc-200 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                <div class="flex items-center gap-3.5 min-w-0">
+                                    <img src="${store.avatar}" alt="${store.name}" class="w-14 h-14 rounded-2xl object-cover bg-zinc-100 border border-zinc-200 shrink-0" onerror="this.src='https://placehold.co/150x150/dbeafe/1d4ed8?text=Toko'">
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            <span class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md">${getCategoryDisplay(store.category)}</span>
+                                            <span class="text-[10px] font-bold text-zinc-500">${prodCount} Produk</span>
+                                        </div>
+                                        <h4 class="font-display font-extrabold text-zinc-900 text-sm truncate mt-0.5">${store.name}</h4>
+                                        <p class="text-[11px] text-zinc-500 truncate">${store.owner} &bull; <span class="font-mono font-bold text-zinc-700">${formatLocalPhone(store.whatsapp)}</span> &bull; ${store.openHours}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1.5 self-end sm:self-center shrink-0">
+                                    <button onclick="quickAddProductForStore('${store.id}')" class="px-2.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-extrabold text-[11px]">
+                                        + Produk
+                                    </button>
+                                    <button onclick="editStore('${store.id}')" class="px-3 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-extrabold text-[11px]">
+                                        <i class="fa-solid fa-pen-to-square mr-1"></i>Edit
+                                    </button>
+                                    <button onclick="deleteStore('${store.id}')" class="px-2.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-extrabold text-[11px]">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Render Daftar Produk di Admin
+            const prodQuery = (document.getElementById('adminSearchProductInput')?.value || '').trim().toLowerCase();
+            const prodStoreFilter = document.getElementById('adminFilterProductStore')?.value || 'ALL';
+            document.getElementById('clearAdminProductSearchBtn')?.classList.toggle('hidden', prodQuery.length === 0);
+
+            const filteredAdminProducts = products.filter(p => {
+                const matchStore = prodStoreFilter === 'ALL' || p.storeId === prodStoreFilter;
+                if (!matchStore) return false;
+                if (!prodQuery) return true;
+                const store = stores.find(s => s.id === p.storeId);
+                return (
+                    p.name.toLowerCase().includes(prodQuery) ||
+                    p.category.toLowerCase().includes(prodQuery) ||
+                    (store && store.name.toLowerCase().includes(prodQuery))
+                );
+            });
+
+            const adminProductsList = document.getElementById('adminProductsList');
+            if (adminProductsList) {
+                if (filteredAdminProducts.length === 0) {
+                    adminProductsList.innerHTML = `<div class="bg-white p-6 rounded-3xl border border-zinc-200 text-center text-xs text-zinc-500">Produk tidak ditemukan.</div>`;
+                } else {
+                    adminProductsList.innerHTML = filteredAdminProducts.map(prod => {
+                        const store = stores.find(s => s.id === prod.storeId);
+                        return `
+                            <div class="bg-white p-3.5 rounded-3xl border border-zinc-200 shadow-2xs flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <img src="${prod.image}" alt="${prod.name}" class="w-14 h-14 rounded-2xl object-cover bg-zinc-100 border border-zinc-200 shrink-0" onerror="this.src='https://placehold.co/150x150/dbeafe/1d4ed8?text=Produk'">
+                                    <div class="min-w-0">
+                                        <span class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md">${store ? store.name : 'Toko UMKM'}</span>
+                                        <h4 class="font-display font-extrabold text-zinc-900 text-xs sm:text-sm truncate mt-0.5">${prod.name}</h4>
+                                        <p class="text-xs font-extrabold text-brand-600">${formatRupiah(prod.price)} <span class="text-[10px] font-normal text-zinc-400">/ ${prod.unit}</span></p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <button onclick="editProduct('${prod.id}')" class="px-3 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-extrabold text-[11px]">
+                                        <i class="fa-solid fa-pen-to-square mr-1"></i>Edit
+                                    </button>
+                                    <button onclick="deleteProduct('${prod.id}')" class="px-2.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-extrabold text-[11px]">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Sinkronisasi Form Pengaturan Judul & Kategori
+            const setInputVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && val !== undefined) el.value = val;
+            };
+            setInputVal('settingBrandMain', siteSettings.brandMain);
+            setInputVal('settingBrandAccent', siteSettings.brandAccent);
+            setInputVal('settingBadgeText', siteSettings.badgeText);
+            setInputVal('settingSubtitle', siteSettings.subtitle);
+            setInputVal('settingCategoryTitle', siteSettings.categoryTitle);
+            setInputVal('settingFooterTitle', siteSettings.footerTitle);
+            setInputVal('settingAdminCode', siteSettings.adminCode);
+            setInputVal('ghSyncOwner', githubSyncConfig.owner);
+            setInputVal('ghSyncRepo', githubSyncConfig.repo);
+            setInputVal('ghSyncToken', githubSyncConfig.token);
+
+            // Render Emoji Picker
+            const emojiGrid = document.getElementById('emojiPickerGrid');
+            if (emojiGrid && emojiGrid.children.length === 0) {
+                emojiGrid.innerHTML = UMKM_EMOJI_LIST.map(em => `
+                    <button type="button" onclick="selectEmojiForCategory('${em}')" class="h-8 rounded-lg hover:bg-brand-50 flex items-center justify-center text-base transition-transform active:scale-90">
+                        ${em}
+                    </button>
+                `).join('');
+            }
+
+            // Render Daftar Kategori Aktif
+            const adminCatList = document.getElementById('adminCategoriesList');
+            if (adminCatList) {
+                adminCatList.innerHTML = categories.map(cat => {
+                    const sCount = stores.filter(s => s.category.toLowerCase() === cat.id.toLowerCase()).length;
+                    const pCount = products.filter(p => p.category.toLowerCase() === cat.id.toLowerCase()).length;
+                    return `
+                        <div class="flex items-center justify-between p-3 rounded-2xl border border-zinc-200 bg-zinc-50/60">
+                            <div class="flex items-center gap-3">
+                                <span class="w-10 h-10 rounded-xl bg-white border border-zinc-200 flex items-center justify-center text-lg shadow-2xs">${cat.emoji}</span>
+                                <div>
+                                    <h4 class="font-display font-bold text-zinc-900 text-xs sm:text-sm">${cat.name}</h4>
+                                    <p class="text-[11px] text-zinc-500">${sCount} Toko &bull; ${pCount} Produk</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="editCategory('${cat.id.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-brand-50 text-brand-700 font-extrabold text-[11px]">Edit</button>
+                                <button onclick="deleteCategory('${cat.id.replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 rounded-xl bg-rose-50 text-rose-600 font-extrabold text-[11px]"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // ==========================================
+        // CRUD TOKO, PRODUK, GAMBAR & KATEGORI
+        // ==========================================
+        function updateStoreImagePreview(url) {
+            const img = document.getElementById('storeFormImagePreview');
+            if (img) img.src = url || 'https://placehold.co/200x200/e2e8f0/475569?text=Foto+Toko';
+        }
+
+        function updateProductImagePreview(url) {
+            const img = document.getElementById('productFormImagePreview');
+            if (img) img.src = url || 'https://placehold.co/200x200/e2e8f0/475569?text=Foto+Produk';
+        }
+
+        function handleImageUpload(event, inputId, previewId) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxDim = 600;
+                    let w = img.width;
+                    let h = img.height;
+                    if (w > h && w > maxDim) {
+                        h = Math.round((h * maxDim) / w);
+                        w = maxDim;
+                    } else if (h > maxDim) {
+                        w = Math.round((w * maxDim) / h);
+                        h = maxDim;
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
+
+                    const inputEl = document.getElementById(inputId);
+                    const previewEl = document.getElementById(previewId);
+                    if (inputEl) inputEl.value = dataUrl;
+                    if (previewEl) previewEl.src = dataUrl;
+                    showToast('Foto berhasil dimuat!', 'success');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function previewAdminStoreMap() {
+            const query = document.getElementById('storeFormMapQuery').value.trim();
+            if (!query) {
+                showToast('Isi titik lokasi Google Maps terlebih dahulu.', 'error');
+                return;
+            }
+            const box = document.getElementById('adminMapPreviewBox');
+            const iframe = document.getElementById('adminMapPreviewIframe');
+            iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+            box.classList.remove('hidden');
+        }
+
+        function handleSaveStore(e) {
+            e.preventDefault();
+            const id = document.getElementById('storeFormId').value;
+            const storeData = {
+                id: id || 'store-' + Date.now(),
+                name: document.getElementById('storeFormName').value.trim(),
+                owner: document.getElementById('storeFormOwner').value.trim(),
+                category: document.getElementById('storeFormCategory').value,
+                city: siteSettings.badgeText || 'Desa Meranti',
+                whatsapp: normalizeWaNumber(document.getElementById('storeFormWa').value.trim()),
+                openHours: document.getElementById('storeFormHours').value.trim(),
+                address: document.getElementById('storeFormAddress').value.trim(),
+                avatar: document.getElementById('storeFormImage').value.trim() || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80',
+                mapQuery: document.getElementById('storeFormMapQuery').value.trim(),
+                description: document.getElementById('storeFormDesc').value.trim(),
+                rating: 4.9,
+                verified: true
+            };
+
+            if (id) {
+                const idx = stores.findIndex(s => s.id === id);
+                if (idx !== -1) stores[idx] = storeData;
+                showToast('Data toko UMKM berhasil diperbarui!', 'success');
+            } else {
+                stores.unshift(storeData);
+                showToast('Toko UMKM baru berhasil ditambahkan!', 'success');
+            }
+
+            saveData();
+            resetStoreForm();
+            renderAdminPanel();
+        }
+
+        function editStore(storeId) {
+            const store = stores.find(s => s.id === storeId);
+            if (!store) return;
+
+            document.getElementById('storeFormId').value = store.id;
+            document.getElementById('storeFormName').value = store.name;
+            document.getElementById('storeFormOwner').value = store.owner;
+            document.getElementById('storeFormCategory').value = store.category;
+            document.getElementById('storeFormWa').value = formatLocalPhone(store.whatsapp).replace(/-/g, '');
+            document.getElementById('storeFormHours').value = store.openHours;
+            document.getElementById('storeFormAddress').value = store.address;
+            document.getElementById('storeFormImage').value = store.avatar;
+            updateStoreImagePreview(store.avatar);
+            document.getElementById('storeFormMapQuery').value = store.mapQuery;
+            document.getElementById('storeFormDesc').value = store.description;
+
+            document.getElementById('adminStoreFormTitle').textContent = 'Edit Toko: ' + store.name;
+            document.getElementById('cancelEditStoreBtn').classList.remove('hidden');
+            document.getElementById('adminStoreForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetStoreForm() {
+            document.getElementById('adminStoreForm').reset();
+            document.getElementById('storeFormId').value = '';
+            updateStoreImagePreview('');
+            document.getElementById('adminMapPreviewBox').classList.add('hidden');
+            document.getElementById('adminStoreFormTitle').textContent = '+ Tambah Toko UMKM Baru';
+            document.getElementById('cancelEditStoreBtn').classList.add('hidden');
+        }
+
+        function deleteStore(storeId) {
+            stores = stores.filter(s => s.id !== storeId);
+            products = products.filter(p => p.storeId !== storeId);
+            saveData();
+            renderAdminPanel();
+            showToast('Toko beserta produknya telah dihapus.', 'info');
+        }
+
+        function quickAddProductForStore(storeId) {
+            switchAdminSubTab('products');
+            resetProductForm();
+            const select = document.getElementById('productFormStoreId');
+            if (select) select.value = storeId;
+            document.getElementById('productFormName')?.focus();
+        }
+
+        function handleSaveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('productFormId').value;
+            const prodData = {
+                id: id || 'prod-' + Date.now(),
+                storeId: document.getElementById('productFormStoreId').value,
+                name: document.getElementById('productFormName').value.trim(),
+                price: Number(document.getElementById('productFormPrice').value),
+                unit: document.getElementById('productFormUnit').value.trim(),
+                category: document.getElementById('productFormCategory').value,
+                badge: document.getElementById('productFormBadge').value.trim(),
+                image: document.getElementById('productFormImage').value.trim() || 'https://images.unsplash.com/photo-1589187151053-5ec8818e661b?auto=format&fit=crop&w=700&q=80',
+                description: document.getElementById('productFormDesc').value.trim()
+            };
+
+            if (id) {
+                const idx = products.findIndex(p => p.id === id);
+                if (idx !== -1) products[idx] = prodData;
+                showToast('Produk berhasil diperbarui!', 'success');
+            } else {
+                products.unshift(prodData);
+                showToast('Produk baru berhasil ditambahkan!', 'success');
+            }
+
+            saveData();
+            resetProductForm();
+            renderAdminPanel();
+        }
+
+        function editProduct(prodId) {
+            const prod = products.find(p => p.id === prodId);
+            if (!prod) return;
+
+            document.getElementById('productFormId').value = prod.id;
+            document.getElementById('productFormStoreId').value = prod.storeId;
+            document.getElementById('productFormName').value = prod.name;
+            document.getElementById('productFormPrice').value = prod.price;
+            document.getElementById('productFormUnit').value = prod.unit;
+            document.getElementById('productFormCategory').value = prod.category;
+            document.getElementById('productFormBadge').value = prod.badge || '';
+            document.getElementById('productFormImage').value = prod.image;
+            updateProductImagePreview(prod.image);
+            document.getElementById('productFormDesc').value = prod.description;
+
+            document.getElementById('adminProductFormTitle').textContent = 'Edit Produk: ' + prod.name;
+            document.getElementById('cancelEditProductBtn').classList.remove('hidden');
+            document.getElementById('adminProductForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetProductForm() {
+            document.getElementById('adminProductForm').reset();
+            document.getElementById('productFormId').value = '';
+            updateProductImagePreview('');
+            document.getElementById('adminProductFormTitle').textContent = '+ Tambah Produk Baru';
+            document.getElementById('cancelEditProductBtn').classList.add('hidden');
+        }
+
+        function deleteProduct(prodId) {
+            products = products.filter(p => p.id !== prodId);
+            saveData();
+            renderAdminPanel();
+            showToast('Produk telah dihapus.', 'info');
+        }
+
+        function clearAdminStoreSearch() {
+            const el = document.getElementById('adminSearchStoreInput');
+            if (el) el.value = '';
+            renderAdminPanel();
+        }
+
+        function clearAdminProductSearch() {
+            const el = document.getElementById('adminSearchProductInput');
+            if (el) el.value = '';
+            renderAdminPanel();
+        }
+
+        function handleSaveSiteSettings(e) {
+            e.preventDefault();
+            siteSettings = {
+                brandMain: document.getElementById('settingBrandMain').value.trim(),
+                brandAccent: document.getElementById('settingBrandAccent').value.trim(),
+                badgeText: document.getElementById('settingBadgeText').value.trim(),
+                subtitle: document.getElementById('settingSubtitle').value.trim(),
+                categoryTitle: document.getElementById('settingCategoryTitle').value.trim(),
+                footerTitle: document.getElementById('settingFooterTitle').value.trim(),
+                adminCode: document.getElementById('settingAdminCode').value.trim() || 'meranti123'
+            };
+            saveData();
+            applySiteSettingsToDOM();
+            showToast('Pengaturan judul website & kode admin berhasil disimpan!', 'success');
+        }
+
+        function selectEmojiForCategory(emoji) {
+            const input = document.getElementById('categoryFormEmoji');
+            if (input) input.value = emoji;
+        }
+
+        function handleSaveCategory(e) {
+            e.preventDefault();
+            const oldId = document.getElementById('categoryEditOldId').value;
+            const emoji = document.getElementById('categoryFormEmoji').value.trim() || '🏷️';
+            const name = document.getElementById('categoryFormName').value.trim();
+            if (!name) return;
+
+            if (oldId) {
+                const idx = categories.findIndex(c => c.id === oldId);
+                if (idx !== -1) {
+                    categories[idx] = { id: name, name, emoji };
+                    stores.forEach(s => { if (s.category === oldId) s.category = name; });
+                    products.forEach(p => { if (p.category === oldId) p.category = name; });
+                }
+                showToast('Kategori UMKM berhasil diperbarui!', 'success');
+            } else {
+                categories.push({ id: name, name, emoji });
+                showToast('Kategori baru berhasil ditambahkan!', 'success');
+            }
+
+            saveData();
+            resetCategoryForm();
+            renderCategoryPills();
+            renderAdminPanel();
+        }
+
+        function editCategory(catId) {
+            const cat = categories.find(c => c.id === catId);
+            if (!cat) return;
+            document.getElementById('categoryEditOldId').value = cat.id;
+            document.getElementById('categoryFormEmoji').value = cat.emoji;
+            document.getElementById('categoryFormName').value = cat.name;
+            document.getElementById('adminCategoryFormTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-brand-600"></i><span>Edit Kategori: ${cat.name}</span>`;
+            document.getElementById('cancelEditCategoryBtn').classList.remove('hidden');
+        }
+
+        function resetCategoryForm() {
+            document.getElementById('adminCategoryForm').reset();
+            document.getElementById('categoryEditOldId').value = '';
+            document.getElementById('adminCategoryFormTitle').innerHTML = `<i class="fa-solid fa-tags text-brand-600"></i><span>Kelola Kategori UMKM</span>`;
+            document.getElementById('cancelEditCategoryBtn').classList.add('hidden');
+        }
+
+        function deleteCategory(catId) {
+            if (categories.length <= 1) {
+                showToast('Minimal harus ada 1 kategori UMKM.', 'error');
+                return;
+            }
+            categories = categories.filter(c => c.id !== catId);
+            saveData();
+            renderCategoryPills();
+            renderAdminPanel();
+            showToast('Kategori telah dihapus.', 'info');
+        }
+
+        // ==========================================
+        // TOAST NOTIFICATION
+        // ==========================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const colors = {
+                success: 'bg-emerald-600 text-white',
+                error: 'bg-rose-600 text-white',
+                info: 'bg-zinc-900 text-white'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `${colors[type] || colors.info} px-4 py-3 rounded-2xl shadow-lg text-xs font-extrabold flex items-center justify-between gap-2 transition-all duration-300`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2600);
+        }
+
+        // Start App on Load
+        window.addEventListener('DOMContentLoaded', async () => {
+            applySiteSettingsToDOM();
+            renderCategoryPills();
+            handleFilterChange();
+            updateLiveClock();
+            await loadData();
+            setInterval(updateLiveClock, 30000);
+        });
+    </script>
+
+    <!-- CLOUD STORAGE SYNC MODULE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'umkm-desa-meranti-app';
+
+        async function initCloudSync() {
+            if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+                return;
+            }
+
+            try {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                    if (!currentUser) return;
+
+                    const catalogDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'umkm_meranti_catalog', 'main_state');
+
+                    onSnapshot(
+                        catalogDocRef,
+                        (snapshot) => {
+                            if (snapshot.exists()) {
+                                const cloudData = snapshot.data();
+                                if (Array.isArray(cloudData.stores)) stores = cloudData.stores;
+                                if (Array.isArray(cloudData.products)) products = cloudData.products;
+                                if (Array.isArray(cloudData.categories)) categories = cloudData.categories;
+                                if (cloudData.siteSettings) siteSettings = { ...DEFAULT_SETTINGS, ...cloudData.siteSettings };
+
+                                applySiteSettingsToDOM();
+                                renderCategoryPills();
+                                handleFilterChange();
+                                if (!document.getElementById('adminAppWrapper')?.classList.contains('hidden')) {
+                                    renderAdminPanel();
+                                }
+                            } else {
+                                window.syncAllDataToCloud();
+                            }
+                        },
+                        (error) => {
+                            console.error('Gagal memuat sinkronisasi cloud:', error);
+                        }
+                    );
+                });
+            } catch (err) {
+                console.error('Inisialisasi cloud dilewati:', err);
+            }
+        }
+
+        window.syncAllDataToCloud = async function() {
+            if (!db || !currentUser) return;
+            try {
+                const catalogDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'umkm_meranti_catalog', 'main_state');
+                await setDoc(catalogDocRef, {
+                    stores,
+                    products,
+                    categories,
+                    siteSettings,
+                    updatedAt: Date.now()
+                });
+            } catch (err) {
+                console.error('Gagal menyimpan ke cloud:', err);
+            }
+        };
+
+        initCloudSync();
+    </script>
+</body>
+</html>
