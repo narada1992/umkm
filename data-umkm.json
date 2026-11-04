@@ -171,6 +171,11 @@
       "id": "Kriya",
       "name": "Kriya & Kerajinan",
       "emoji": "🧺"
+    },
+    {
+      "id": "Bengkel",
+      "name": "Bengkel",
+      "emoji": "🔧"
     }
   ],
   "siteSettings": {
@@ -182,5 +187,5 @@
     "footerTitle": "Direktori Resmi UMKM Desa Meranti 🚀",
     "adminCode": "meranti123"
   },
-  "updatedAt": "2026-11-04T12:13:21.782Z"
+  "updatedAt": "2026-11-04T12:15:32.674Z"
 }
