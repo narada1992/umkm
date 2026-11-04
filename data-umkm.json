@@ -1,36 +1,6 @@
 {
   "stores": [
     {
-      "id": "store-2",
-      "name": "Roastery Kopi Meranti",
-      "owner": "Kang Dedi Pratama",
-      "category": "Minuman",
-      "city": "Desa Meranti",
-      "whatsapp": "6281398765402",
-      "address": "Dusun II Krajan RT 04/RW 02, Desa Meranti",
-      "mapQuery": "Kantor Desa Meranti",
-      "openHours": "07.00 - 22.00 WIB",
-      "rating": 4.8,
-      "verified": true,
-      "avatar": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80",
-      "description": "Kedai dan rumah sangrai kopi pilihan hasil kebun warga serta minuman herbal segar khas Desa Meranti."
-    },
-    {
-      "id": "store-3",
-      "name": "Galeri Tenun & Batik Meranti",
-      "owner": "Ibu Sri Wahyuni",
-      "category": "Fashion",
-      "city": "Desa Meranti",
-      "whatsapp": "6285711223303",
-      "address": "Jl. Melati Dusun III RT 01/RW 03, Desa Meranti",
-      "mapQuery": "Pasar Desa Meranti",
-      "openHours": "08.00 - 17.00 WIB",
-      "rating": 5,
-      "verified": true,
-      "avatar": "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=600&q=80",
-      "description": "Pengrajin kain batik tulis, kemeja etnik, dan busana kasual karya kelompok ibu-ibu pengrajin Desa Meranti."
-    },
-    {
       "id": "store-4",
       "name": "Kriya Bambu & Rotan Meranti",
       "owner": "Pak Hendra Wijaya",
@@ -47,50 +17,6 @@
     }
   ],
   "products": [
-    {
-      "id": "prod-103",
-      "storeId": "store-2",
-      "name": "Biji Kopi Arabika Wine Process",
-      "category": "Minuman",
-      "price": 75000,
-      "unit": "Pouch 250gr",
-      "badge": "💎 Premium",
-      "image": "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=700&q=80",
-      "description": "Biji kopi arabika petik merah pilihan dengan aroma fruity yang kuat. Tersedia dalam bentuk biji utuh maupun giling."
-    },
-    {
-      "id": "prod-104",
-      "storeId": "store-2",
-      "name": "Wedang Uwuh Rempah Komplit",
-      "category": "Minuman",
-      "price": 30000,
-      "unit": "Pack isi 10 Sachet",
-      "badge": "🌿 Herbal",
-      "image": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=700&q=80",
-      "description": "Racikan jahe merah kering, kayu secang, cengkeh, serai, dan gula batu asli untuk menjaga imunitas tubuh."
-    },
-    {
-      "id": "prod-105",
-      "storeId": "store-3",
-      "name": "Kain Batik Tulis Motif Meranti",
-      "category": "Fashion",
-      "price": 245000,
-      "unit": "Potong (2.4m x 1.15m)",
-      "badge": "🎨 Eksklusif",
-      "image": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=700&q=80",
-      "description": "Kain katun primisima halus dengan pewarnaan batik tulis tangan asli karya pengrajin Desa Meranti."
-    },
-    {
-      "id": "prod-106",
-      "storeId": "store-3",
-      "name": "Outer Tenun Etnik Unisex",
-      "category": "Fashion",
-      "price": 165000,
-      "unit": "All Size Fit to XL",
-      "badge": "✨ Koleksi Baru",
-      "image": "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=700&q=80",
-      "description": "Cardigan outer kasual dari tenun ikat asli yang nyaman dipakai untuk acara santai maupun formal."
-    },
     {
       "id": "prod-107",
       "storeId": "store-4",
@@ -150,5 +76,5 @@
     "footerTitle": "Direktori Resmi UMKM Desa Meranti 🚀",
     "adminCode": "meranti123"
   },
-  "updatedAt": "2026-11-04T13:43:25.751Z"
+  "updatedAt": "2026-11-04T13:43:30.040Z"
 }
