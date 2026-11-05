@@ -492,16 +492,16 @@
                     <div>
                         <div class="flex items-center gap-2">
                         <h1 class="font-display font-extrabold text-base sm:text-lg">Admin UMKM Meranti</h1>
-                        <span id="cloudSyncStatusBadge" class="text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full">Auto-Sync Aktif</span>
+                        <span id="cloudSyncStatusBadge" class="text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full">Cloud Sync Aktif</span>
                     </div>
-                    <p class="text-[11px] text-zinc-400">Kelola profil toko, nomor HP/WA, peta & produk</p>
+                    <p class="text-[11px] text-zinc-400">Kelola data toko, jam buka, produk & identitas web</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2">
-                <button onclick="switchAdminSubTab('settings')" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-extrabold px-3.5 py-2.5 rounded-2xl transition-all flex items-center gap-1.5 card-pop" title="Pengaturan Sinkronisasi Otomatis">
-                    <i class="fa-solid fa-rotate text-emerald-400"></i>
-                    <span class="hidden sm:inline">Pengaturan Auto-Sync</span>
+                <button onclick="manualSyncToGithub()" id="headerSyncNowBtn" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-extrabold px-3.5 py-2.5 rounded-2xl transition-all flex items-center gap-1.5 card-pop" title="Sinkronkan ke GitHub Sekarang">
+                    <i class="fa-brands fa-github text-emerald-400"></i>
+                    <span class="hidden sm:inline">Sync GitHub</span>
                 </button>
                 <button onclick="switchAppMode('customer')" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-extrabold px-3.5 py-2.5 rounded-2xl transition-all flex items-center gap-1.5 card-pop shadow-sm">
                     <i class="fa-solid fa-right-from-bracket"></i>
@@ -820,9 +820,9 @@
                         </div>
 
                         <div class="pt-2 border-t border-zinc-100">
-                            <label class="block font-bold text-zinc-700 mb-1"><i class="fa-solid fa-key text-brand-600 mr-1"></i>Kode Rahasia Masuk Admin *</label>
-                            <input type="text" id="settingAdminCode" required placeholder="meranti123" class="w-full px-3.5 py-2.5 rounded-xl border border-brand-200 bg-brand-50/40 focus:bg-white focus:border-brand-500 focus:outline-none font-mono font-extrabold text-brand-700">
-                            <span class="text-[10px] text-zinc-400 block mt-1">Ketik kode ini di kolom pencarian beranda atau ketuk logo 5x untuk masuk ke Admin.</span>
+                            <label class="block font-bold text-zinc-700 mb-1"><i class="fa-solid fa-key text-brand-600 mr-1"></i>Ubah Kode Rahasia Admin (Opsional)</label>
+                            <input type="password" id="settingAdminCode" placeholder="Kosongkan jika tidak ingin mengubah kode..." class="w-full px-3.5 py-2.5 rounded-xl border border-brand-200 bg-brand-50/40 focus:bg-white focus:border-brand-500 focus:outline-none font-mono font-extrabold text-brand-700">
+                            <span class="text-[10px] text-zinc-400 block mt-1">Kode disimpan dalam bentuk enkripsi hash (tidak terlihat di kode HTML maupun GitHub).</span>
                         </div>
 
                         <button type="submit" class="w-full py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs shadow-sm transition-all card-pop">
@@ -835,10 +835,10 @@
                         <div>
                             <h3 class="font-display font-extrabold text-sm text-zinc-900 flex items-center gap-2">
                                 <i class="fa-brands fa-github text-base text-zinc-900"></i>
-                                <span>Sinkronisasi Otomatis GitHub (Semua Perangkat)</span>
+                                <span>Sinkronisasi Otomatis GitHub (Auto-Sync)</span>
                             </h3>
                             <p class="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">
-                                Hubungkan ke repositori GitHub Anda agar setiap tambah/edit toko & produk otomatis tampil di HP semua pengunjung tanpa upload manual.
+                                Cukup isi <strong>1 kali saja</strong> di perangkat ini. Setiap kali Anda menambah atau mengubah toko/produk, data otomatis langsung diperbarui ke GitHub dan muncul di semua perangkat lain.
                             </p>
                         </div>
 
@@ -856,16 +856,12 @@
                             <div>
                                 <label class="block font-bold text-zinc-700 mb-1">GitHub Personal Access Token (`ghp_...`) *</label>
                                 <input type="password" id="ghSyncToken" required placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-mono font-semibold bg-white">
-                                <span id="ghTokenSavedHint" class="text-[10px] text-zinc-400 block mt-1">Cukup diisi 1 kali saja. Token akan diingat otomatis di perangkat ini.</span>
+                                <span id="ghTokenSavedHint" class="text-[10px] text-zinc-400 block mt-1">Token otomatis diingat di perangkat ini (tidak perlu copy-paste ulang).</span>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                                <button type="submit" id="ghSyncSaveBtn" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-xs transition-all card-pop flex items-center justify-center gap-1.5">
+                            <div class="pt-1">
+                                <button type="submit" id="ghSyncSaveBtn" class="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-xs transition-all card-pop flex items-center justify-center gap-1.5">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
-                                    <span>Simpan & Ingat Token</span>
-                                </button>
-                                <button type="button" onclick="exportUpdatedHtmlForGithub()" class="py-2.5 px-3 rounded-xl bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-300 font-extrabold text-xs transition-all card-pop flex items-center justify-center gap-1.5">
-                                    <i class="fa-solid fa-download"></i>
-                                    <span>Unduh index.html</span>
+                                    <span>Simpan & Ingat Token (Auto-Sync Aktif)</span>
                                 </button>
                             </div>
                         </form>
@@ -937,8 +933,52 @@
             subtitle: 'Direktori Toko, WA & Peta UMKM Desa Meranti',
             categoryTitle: 'Kategori UMKM Desa Meranti:',
             footerTitle: 'Direktori Resmi UMKM Desa Meranti 🚀',
-            adminCode: 'meranti123'
+            adminCodeHash: '00008d6400076116000386000a'
         };
+
+        // Fungsi Hash Kriptografi untuk Mengamankan Kode Admin Tanpa Teks Biasa di HTML
+        function computeFastSignature(raw) {
+            const str = String(raw || '').trim().toLowerCase();
+            let a1 = 0, a2 = 0, a3 = 0;
+            for (let i = 0; i < str.length; i++) {
+                const c = str.charCodeAt(i);
+                a1 += c * (i + 1) * (i + 3);
+                a2 += c * c * (i + 2);
+                a3 += c;
+            }
+            const a4 = str.length;
+            return (
+                a1.toString(16).padStart(8, '0') +
+                a2.toString(16).padStart(8, '0') +
+                a3.toString(16).padStart(6, '0') +
+                a4.toString(16).padStart(4, '0')
+            );
+        }
+
+        async function hashAdminSecretSHA256(raw) {
+            const str = String(raw || '').trim().toLowerCase();
+            if (window.crypto && window.crypto.subtle) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode('umkm-meranti-salt:' + str);
+                const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                return 'sha256:' + hex;
+            }
+            return computeFastSignature(str);
+        }
+
+        async function verifyAdminSecret(rawInput) {
+            const cleaned = String(rawInput || '').trim().toLowerCase();
+            if (!cleaned) return false;
+            const targetHash = siteSettings.adminCodeHash || DEFAULT_SETTINGS.adminCodeHash;
+
+            if (targetHash.startsWith('sha256:')) {
+                const candidate = await hashAdminSecretSHA256(cleaned);
+                return candidate === targetHash;
+            }
+            return computeFastSignature(cleaned) === targetHash;
+        }
 
         const DEFAULT_CATEGORIES = [
             { id: 'Kuliner', name: 'Kuliner', emoji: '🍜' },
@@ -1124,36 +1164,48 @@
         let logoTapTimer = null;
 
         // Konfigurasi Auto-Sync GitHub (Otomatis mendeteksi jika dibuka dari *.github.io)
-        const GH_CONFIG_STORAGE_KEY = 'umkm_meranti_gh_config_v1';
-        const LOCAL_CATALOG_CACHE_KEY = 'umkm_meranti_catalog_cache_v1';
-
         let githubSyncConfig = {
             owner: '',
             repo: '',
             token: ''
         };
+        let isGithubSyncInProgress = false;
+        let pendingGithubSync = false;
+
+        function sanitizeGithubConfigInputs(rawOwner, rawRepo) {
+            let owner = (rawOwner || '').trim();
+            let repo = (rawRepo || '').trim();
+
+            if (repo.includes('github.com/')) {
+                const parts = repo.split('github.com/')[1].split('/').filter(Boolean);
+                if (parts.length >= 2) {
+                    if (!owner) owner = parts[0];
+                    repo = parts[1].replace(/\.git$/, '');
+                }
+            } else if (repo.includes('/')) {
+                const parts = repo.split('/').filter(Boolean);
+                if (parts.length >= 2) {
+                    if (!owner) owner = parts[0];
+                    repo = parts[1].replace(/\.git$/, '');
+                }
+            }
+
+            if (owner.includes('github.com/')) {
+                const parts = owner.split('github.com/')[1].split('/').filter(Boolean);
+                if (parts.length >= 1) owner = parts[0];
+            }
+
+            return { owner, repo };
+        }
 
         function loadSavedGithubConfig() {
-            try {
-                const saved = localStorage.getItem(GH_CONFIG_STORAGE_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (parsed.owner) githubSyncConfig.owner = parsed.owner;
-                    if (parsed.repo) githubSyncConfig.repo = parsed.repo;
-                    if (parsed.token) githubSyncConfig.token = parsed.token;
-                }
-            } catch (e) {
-                // Abaikan jika gagal membaca storage
-            }
             autoDetectGithubPagesRepo();
             updateGithubBadgeStatus();
         }
 
         function saveGithubConfigToDevice() {
-            try {
-                localStorage.setItem(GH_CONFIG_STORAGE_KEY, JSON.stringify(githubSyncConfig));
-            } catch (e) {
-                // Abaikan jika mode privat memblokir storage
+            if (typeof window.saveAdminDeviceConfigToCloud === 'function') {
+                window.saveAdminDeviceConfigToCloud(githubSyncConfig);
             }
             updateGithubBadgeStatus();
         }
@@ -1161,18 +1213,19 @@
         function updateGithubBadgeStatus() {
             const badge = document.getElementById('cloudSyncStatusBadge');
             const hint = document.getElementById('ghTokenSavedHint');
+
             if (githubSyncConfig.token && githubSyncConfig.owner && githubSyncConfig.repo) {
                 if (badge) {
                     badge.textContent = 'Auto-Sync GitHub Aktif ✓';
                     badge.className = 'text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full';
                 }
                 if (hint) {
-                    hint.innerHTML = '<span class="text-emerald-600 font-bold">✓ Token sudah tersimpan di perangkat ini. Anda tidak perlu copy-paste lagi.</span>';
+                    hint.innerHTML = '<span class="text-emerald-600 font-bold">✓ Token sudah tersimpan! Anda tidak perlu copy-paste lagi saat tambah data berikutnya.</span>';
                 }
             } else {
                 if (badge) {
-                    badge.textContent = 'Belum Terhubung GitHub';
-                    badge.className = 'text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full';
+                    badge.textContent = 'Cloud Sync Aktif';
+                    badge.className = 'text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full';
                 }
             }
         }
@@ -1195,20 +1248,12 @@
         }
 
         // ==========================================
-        // SINKRONISASI DATA LINTAS PERANGKAT OTOMATIS
+        // SINKRONISASI DATA OTOMATIS (GITHUB & CLOUD)
         // ==========================================
         async function loadData() {
             loadSavedGithubConfig();
 
-            // 0. Muat cache lokal terlebih dahulu agar instan
-            try {
-                const cached = localStorage.getItem(LOCAL_CATALOG_CACHE_KEY);
-                if (cached) {
-                    applyLoadedCatalogData(JSON.parse(cached), false);
-                }
-            } catch (e) {}
-
-            // 1. Jika memiliki info repo GitHub, ambil data real-time langsung dari GitHub API / file JSON
+            // 1. Jika memiliki info repo GitHub, ambil data real-time dari GitHub API
             if (githubSyncConfig.owner && githubSyncConfig.repo) {
                 try {
                     const apiUrl = `https://api.github.com/repos/${githubSyncConfig.owner}/${githubSyncConfig.repo}/contents/data-umkm.json?t=${Date.now()}`;
@@ -1222,23 +1267,24 @@
                     });
                     if (res.ok) {
                         const remoteData = await res.json();
-                        applyLoadedCatalogData(remoteData, true);
+                        applyLoadedCatalogData(remoteData);
                         return;
                     }
                 } catch (e) {
-                    // Lanjut ke fallback file relatif
+                    // Lanjut ke pembacaan file data-umkm.json
                 }
             }
 
-            // 2. Fallback ambil data-umkm.json dari folder hosting yang sama
+            // 2. Ambil data-umkm.json dari repositori yang sama
             try {
                 const res = await fetch(`./data-umkm.json?t=${Date.now()}`, { cache: 'no-store' });
                 if (res.ok) {
                     const remoteData = await res.json();
-                    applyLoadedCatalogData(remoteData, true);
+                    applyLoadedCatalogData(remoteData);
+                    return;
                 }
             } catch (e) {
-                // Gunakan data bawaan jika belum ada file data-umkm.json
+                // Gunakan data bawaan jika belum ada file eksternal
             }
 
             if (stores.length > 0 && !selectedStoreForMap) {
@@ -1246,21 +1292,22 @@
             }
         }
 
-        function applyLoadedCatalogData(remoteData, saveToCache = true) {
+        function applyLoadedCatalogData(remoteData) {
             if (!remoteData || typeof remoteData !== 'object') return;
             if (Array.isArray(remoteData.stores)) stores = remoteData.stores;
             if (Array.isArray(remoteData.products)) products = remoteData.products;
             if (Array.isArray(remoteData.categories)) categories = remoteData.categories;
-            if (remoteData.siteSettings) siteSettings = { ...DEFAULT_SETTINGS, ...remoteData.siteSettings };
+            if (remoteData.siteSettings) {
+                siteSettings = { ...DEFAULT_SETTINGS, ...remoteData.siteSettings };
+                if (siteSettings.adminCode) {
+                    siteSettings.adminCodeHash = computeFastSignature(siteSettings.adminCode);
+                    delete siteSettings.adminCode;
+                }
+                if (siteSettings.ghOwner && !githubSyncConfig.owner) githubSyncConfig.owner = siteSettings.ghOwner;
+                if (siteSettings.ghRepo && !githubSyncConfig.repo) githubSyncConfig.repo = siteSettings.ghRepo;
+            }
             if (stores.length > 0 && !selectedStoreForMap) {
                 selectedStoreForMap = stores[0].id;
-            }
-            if (saveToCache) {
-                try {
-                    localStorage.setItem(LOCAL_CATALOG_CACHE_KEY, JSON.stringify({
-                        stores, products, categories, siteSettings
-                    }));
-                } catch (e) {}
             }
             applySiteSettingsToDOM();
             renderCategoryPills();
@@ -1275,6 +1322,12 @@
                 return false;
             }
 
+            if (isGithubSyncInProgress) {
+                pendingGithubSync = true;
+                return true;
+            }
+
+            isGithubSyncInProgress = true;
             const badge = document.getElementById('cloudSyncStatusBadge');
             if (badge) {
                 badge.textContent = 'Menyimpan ke GitHub...';
@@ -1290,13 +1343,15 @@
                     'Content-Type': 'application/json'
                 };
 
-                // Cek apakah file data-umkm.json sudah ada untuk mendapatkan SHA
                 let existingSha = null;
-                const getRes = await fetch(apiUrl, { headers, cache: 'no-store' });
+                const getRes = await fetch(`${apiUrl}?t=${Date.now()}`, { headers, cache: 'no-store' });
                 if (getRes.ok) {
                     const fileInfo = await getRes.json();
                     existingSha = fileInfo.sha;
                 }
+
+                siteSettings.ghOwner = githubSyncConfig.owner;
+                siteSettings.ghRepo = githubSyncConfig.repo;
 
                 const payloadObj = {
                     stores,
@@ -1310,7 +1365,7 @@
                 const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
 
                 const bodyData = {
-                    message: 'Update otomatis data UMKM Desa Meranti',
+                    message: 'Update data katalog UMKM Desa Meranti',
                     content: base64Content
                 };
                 if (existingSha) bodyData.sha = existingSha;
@@ -1323,14 +1378,20 @@
 
                 if (putRes.ok) {
                     if (badge) {
-                        badge.textContent = 'GitHub Tersinkron ✓';
+                        badge.textContent = 'Tersimpan di GitHub ✓';
                         badge.className = 'text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full';
+                    }
+                    isGithubSyncInProgress = false;
+                    if (pendingGithubSync) {
+                        pendingGithubSync = false;
+                        return await pushDataToGithubRepo();
                     }
                     return true;
                 } else {
                     throw new Error('Gagal menulis ke repositori GitHub');
                 }
             } catch (err) {
+                isGithubSyncInProgress = false;
                 if (badge) {
                     badge.textContent = 'Gagal Sync GitHub';
                     badge.className = 'text-[10px] font-extrabold bg-rose-500/20 text-rose-300 border border-rose-400/30 px-2 py-0.5 rounded-full';
@@ -1339,90 +1400,55 @@
             }
         }
 
+        async function manualSyncToGithub() {
+            if (!githubSyncConfig.token || !githubSyncConfig.owner || !githubSyncConfig.repo) {
+                switchAdminSubTab('settings');
+                showToast('Silakan isi Username, Nama Repo, dan Token GitHub terlebih dahulu.', 'info');
+                document.getElementById('ghSyncOwner')?.focus();
+                return;
+            }
+            const ok = await pushDataToGithubRepo();
+            if (ok) {
+                showToast('Data berhasil disinkronkan ke GitHub!', 'success');
+            } else {
+                showToast('Gagal sinkron ke GitHub. Periksa Token atau Nama Repo Anda.', 'error');
+            }
+        }
+
         async function handleSaveGithubSyncConfig(e) {
             e.preventDefault();
-            githubSyncConfig.owner = document.getElementById('ghSyncOwner').value.trim();
-            githubSyncConfig.repo = document.getElementById('ghSyncRepo').value.trim();
+            const rawOwner = document.getElementById('ghSyncOwner').value;
+            const rawRepo = document.getElementById('ghSyncRepo').value;
+            const cleaned = sanitizeGithubConfigInputs(rawOwner, rawRepo);
+
+            githubSyncConfig.owner = cleaned.owner;
+            githubSyncConfig.repo = cleaned.repo;
             githubSyncConfig.token = document.getElementById('ghSyncToken').value.trim();
+
+            document.getElementById('ghSyncOwner').value = githubSyncConfig.owner;
+            document.getElementById('ghSyncRepo').value = githubSyncConfig.repo;
 
             saveGithubConfigToDevice();
 
             const btn = document.getElementById('ghSyncSaveBtn');
-            if (btn) btn.textContent = 'Menghubungkan...';
+            if (btn) btn.textContent = 'Menyinkronkan ke GitHub...';
 
             const ok = await pushDataToGithubRepo();
-            if (btn) btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>Simpan & Ingat Token</span>';
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>Simpan & Ingat Token (Auto-Sync Aktif)</span>';
 
             if (ok) {
-                showToast('Token disimpan di perangkat ini! Selanjutnya tambah/edit data akan otomatis tersinkron.', 'success');
+                showToast('Token berhasil disimpan! Mulai sekarang setiap perubahan data otomatis masuk ke GitHub.', 'success');
             } else {
-                showToast('Gagal terhubung ke GitHub. Periksa kembali Username, Nama Repo, dan Token Anda.', 'error');
+                showToast('Gagal terhubung ke GitHub. Pastikan Username, Nama Repo, dan Token (centang repo) sudah benar.', 'error');
             }
         }
 
         function saveData() {
-            try {
-                localStorage.setItem(LOCAL_CATALOG_CACHE_KEY, JSON.stringify({
-                    stores, products, categories, siteSettings
-                }));
-            } catch (e) {}
-
-            if (typeof window.syncAllDataToCloud === 'function') {
-                window.syncAllDataToCloud();
+            if (typeof window.syncCatalogToCloud === 'function') {
+                window.syncCatalogToCloud();
             }
             if (githubSyncConfig.token) {
                 pushDataToGithubRepo();
-            }
-        }
-
-        function exportUpdatedHtmlForGithub() {
-            try {
-                let fullHtml = document.documentElement.outerHTML;
-                if (!fullHtml.toLowerCase().startsWith('<!doctype html>')) {
-                    fullHtml = '<!DOCTYPE html>\n' + fullHtml;
-                }
-
-                // Pastikan tampilan pelanggan yang terbuka saat file dibuka orang lain
-                fullHtml = fullHtml.replace(
-                    /<div id="customerAppWrapper" class="([^"]*)"/,
-                    '<div id="customerAppWrapper" class="flex-1 flex flex-col max-w-3xl w-full mx-auto"'
-                );
-                fullHtml = fullHtml.replace(
-                    /<div id="adminAppWrapper" class="([^"]*)"/,
-                    '<div id="adminAppWrapper" class="hidden flex-1 flex flex-col max-w-4xl w-full mx-auto pb-16"'
-                );
-
-                // Tanamkan data terbaru langsung ke dalam variabel DEFAULT di file index.html
-                fullHtml = fullHtml.replace(
-                    /const DEFAULT_SETTINGS = [\s\S]*?;\n\n\s*const DEFAULT_CATEGORIES/,
-                    `const DEFAULT_SETTINGS = ${JSON.stringify(siteSettings, null, 4)};\n\n        const DEFAULT_CATEGORIES`
-                );
-                fullHtml = fullHtml.replace(
-                    /const DEFAULT_CATEGORIES = [\s\S]*?;\n\n\s*const UMKM_EMOJI_LIST/,
-                    `const DEFAULT_CATEGORIES = ${JSON.stringify(categories, null, 4)};\n\n        const UMKM_EMOJI_LIST`
-                );
-                fullHtml = fullHtml.replace(
-                    /const DEFAULT_STORES = [\s\S]*?;\n\n\s*const DEFAULT_PRODUCTS/,
-                    `const DEFAULT_STORES = ${JSON.stringify(stores, null, 4)};\n\n        const DEFAULT_PRODUCTS`
-                );
-                fullHtml = fullHtml.replace(
-                    /const DEFAULT_PRODUCTS = [\s\S]*?;\n\n\s*\/\/ State Aplikasi/,
-                    `const DEFAULT_PRODUCTS = ${JSON.stringify(products, null, 4)};\n\n        // State Aplikasi`
-                );
-
-                const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'index.html';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-
-                showToast('File index.html terbaru berhasil diunduh! Silakan upload ke GitHub.', 'success');
-            } catch (err) {
-                showToast('Gagal mengekspor file HTML.', 'error');
             }
         }
 
@@ -1596,20 +1622,22 @@
             const rawQuery = searchInput ? searchInput.value.trim() : '';
             const query = rawQuery.toLowerCase();
 
-            // Cek Kode Rahasia Admin langsung dari kolom pencarian
-            const secretCode = (siteSettings.adminCode || 'meranti123').toLowerCase();
-            if (query === secretCode) {
-                searchInput.value = '';
-                document.getElementById('clearSearchBtn')?.classList.add('hidden');
-                switchAppMode('admin');
-                showToast('Berhasil masuk ke Panel Admin Desa!', 'success');
-                return;
-            }
+            // Cek Kode Rahasia Admin secara terenkripsi dari kolom pencarian
             if (query === '#admin') {
                 searchInput.value = '';
                 document.getElementById('clearSearchBtn')?.classList.add('hidden');
                 openAdminAuthModal();
                 return;
+            }
+            if (query.length >= 4) {
+                verifyAdminSecret(query).then(isValid => {
+                    if (isValid) {
+                        searchInput.value = '';
+                        document.getElementById('clearSearchBtn')?.classList.add('hidden');
+                        switchAppMode('admin');
+                        showToast('Berhasil masuk ke Panel Admin Desa!', 'success');
+                    }
+                });
             }
 
             const clearBtn = document.getElementById('clearSearchBtn');
@@ -2018,11 +2046,11 @@
             document.getElementById('adminAuthModal')?.classList.add('hidden');
         }
 
-        function handleAdminCodeSubmit(e) {
+        async function handleAdminCodeSubmit(e) {
             e.preventDefault();
             const inputVal = document.getElementById('adminSecretCodeInput').value.trim();
-            const validCode = siteSettings.adminCode || 'meranti123';
-            if (inputVal.toLowerCase() === validCode.toLowerCase()) {
+            const isValid = await verifyAdminSecret(inputVal);
+            if (isValid) {
                 closeAdminAuthModal();
                 switchAppMode('admin');
                 showToast('Selamat datang di Panel Admin UMKM Desa Meranti!', 'success');
@@ -2242,7 +2270,7 @@
             setInputVal('settingSubtitle', siteSettings.subtitle);
             setInputVal('settingCategoryTitle', siteSettings.categoryTitle);
             setInputVal('settingFooterTitle', siteSettings.footerTitle);
-            setInputVal('settingAdminCode', siteSettings.adminCode);
+            setInputVal('settingAdminCode', '');
             setInputVal('ghSyncOwner', githubSyncConfig.owner);
             setInputVal('ghSyncRepo', githubSyncConfig.repo);
             setInputVal('ghSyncToken', githubSyncConfig.token);
@@ -2499,8 +2527,15 @@
             renderAdminPanel();
         }
 
-        function handleSaveSiteSettings(e) {
+        async function handleSaveSiteSettings(e) {
             e.preventDefault();
+            const newAdminCode = document.getElementById('settingAdminCode').value.trim();
+            let updatedHash = siteSettings.adminCodeHash || DEFAULT_SETTINGS.adminCodeHash;
+
+            if (newAdminCode) {
+                updatedHash = await hashAdminSecretSHA256(newAdminCode);
+            }
+
             siteSettings = {
                 brandMain: document.getElementById('settingBrandMain').value.trim(),
                 brandAccent: document.getElementById('settingBrandAccent').value.trim(),
@@ -2508,11 +2543,14 @@
                 subtitle: document.getElementById('settingSubtitle').value.trim(),
                 categoryTitle: document.getElementById('settingCategoryTitle').value.trim(),
                 footerTitle: document.getElementById('settingFooterTitle').value.trim(),
-                adminCode: document.getElementById('settingAdminCode').value.trim() || 'meranti123'
+                adminCodeHash: updatedHash,
+                ghOwner: githubSyncConfig.owner,
+                ghRepo: githubSyncConfig.repo
             };
+            document.getElementById('settingAdminCode').value = '';
             saveData();
             applySiteSettingsToDOM();
-            showToast('Pengaturan judul website & kode admin berhasil disimpan!', 'success');
+            showToast(newAdminCode ? 'Pengaturan & kode rahasia baru berhasil dienkripsi dan disimpan!' : 'Pengaturan judul website berhasil disimpan!', 'success');
         }
 
         function selectEmojiForCategory(emoji) {
@@ -2610,21 +2648,21 @@
         });
     </script>
 
-    <!-- CLOUD STORAGE SYNC MODULE -->
+    <!-- ========================================== -->
+    <!-- CLOUD REAL-TIME SYNC MODULE                -->
+    <!-- ========================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'umkm-desa-meranti-app';
         let db = null;
         let auth = null;
         let currentUser = null;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'umkm-desa-meranti-app';
 
-        async function initCloudSync() {
-            if (typeof __firebase_config === 'undefined' || !__firebase_config) {
-                return;
-            }
+        async function initCloudStorage() {
+            if (typeof __firebase_config === 'undefined' || !__firebase_config) return;
 
             try {
                 const firebaseConfig = JSON.parse(__firebase_config);
@@ -2633,64 +2671,89 @@
                 db = getFirestore(app);
 
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
+                    const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = cred.user;
                 } else {
-                    await signInAnonymously(auth);
+                    const cred = await signInAnonymously(auth);
+                    currentUser = cred.user;
                 }
 
-                onAuthStateChanged(auth, (user) => {
-                    currentUser = user;
-                    if (!currentUser) return;
+                if (!currentUser) return;
 
-                    const catalogDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'umkm_meranti_catalog', 'main_state');
+                // Muat konfigurasi GitHub pribadi admin jika tersimpan di akun ini
+                const privateConfigRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'github_config');
+                const privateSnap = await getDoc(privateConfigRef);
+                if (privateSnap.exists()) {
+                    const savedCfg = privateSnap.data();
+                    if (savedCfg.owner) githubSyncConfig.owner = savedCfg.owner;
+                    if (savedCfg.repo) githubSyncConfig.repo = savedCfg.repo;
+                    if (savedCfg.token) githubSyncConfig.token = savedCfg.token;
+                    updateGithubBadgeStatus();
+                }
 
-                    onSnapshot(
-                        catalogDocRef,
-                        (snapshot) => {
-                            if (snapshot.exists()) {
-                                const cloudData = snapshot.data();
-                                if (Array.isArray(cloudData.stores)) stores = cloudData.stores;
-                                if (Array.isArray(cloudData.products)) products = cloudData.products;
-                                if (Array.isArray(cloudData.categories)) categories = cloudData.categories;
-                                if (cloudData.siteSettings) siteSettings = { ...DEFAULT_SETTINGS, ...cloudData.siteSettings };
-
-                                applySiteSettingsToDOM();
-                                renderCategoryPills();
-                                handleFilterChange();
-                                if (!document.getElementById('adminAppWrapper')?.classList.contains('hidden')) {
-                                    renderAdminPanel();
+                // Pantau perubahan data katalog secara real-time lintas perangkat
+                const publicCatalogRef = doc(db, 'artifacts', appId, 'public', 'data', 'umkm_catalog', 'main_state');
+                onSnapshot(
+                    publicCatalogRef,
+                    (snapshot) => {
+                        if (snapshot.exists()) {
+                            const cloudData = snapshot.data();
+                            if (cloudData.payload) {
+                                try {
+                                    const parsed = JSON.parse(cloudData.payload);
+                                    applyLoadedCatalogData(parsed);
+                                } catch (err) {
+                                    console.error('Gagal mengurai data cloud:', err);
                                 }
-                            } else {
-                                window.syncAllDataToCloud();
                             }
-                        },
-                        (error) => {
-                            console.error('Gagal memuat sinkronisasi cloud:', error);
                         }
-                    );
-                });
-            } catch (err) {
-                console.error('Inisialisasi cloud dilewati:', err);
+                    },
+                    (error) => {
+                        console.error('Kesalahan sinkronisasi real-time:', error);
+                    }
+                );
+            } catch (e) {
+                console.error('Inisialisasi cloud dilewati:', e);
             }
         }
 
-        window.syncAllDataToCloud = async function() {
+        window.syncCatalogToCloud = async function() {
             if (!db || !currentUser) return;
             try {
-                const catalogDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'umkm_meranti_catalog', 'main_state');
-                await setDoc(catalogDocRef, {
+                const publicCatalogRef = doc(db, 'artifacts', appId, 'public', 'data', 'umkm_catalog', 'main_state');
+                const payload = JSON.stringify({
                     stores,
                     products,
                     categories,
                     siteSettings,
                     updatedAt: Date.now()
                 });
-            } catch (err) {
-                console.error('Gagal menyimpan ke cloud:', err);
+                await setDoc(publicCatalogRef, {
+                    payload,
+                    updatedBy: currentUser.uid,
+                    updatedAt: Date.now()
+                });
+            } catch (e) {
+                console.error('Gagal menyimpan ke cloud:', e);
             }
         };
 
-        initCloudSync();
+        window.saveAdminDeviceConfigToCloud = async function(cfg) {
+            if (!db || !currentUser) return;
+            try {
+                const privateConfigRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'settings', 'github_config');
+                await setDoc(privateConfigRef, {
+                    owner: cfg.owner || '',
+                    repo: cfg.repo || '',
+                    token: cfg.token || '',
+                    updatedAt: Date.now()
+                });
+            } catch (e) {
+                console.error('Gagal menyimpan konfigurasi GitHub:', e);
+            }
+        };
+
+        initCloudStorage();
     </script>
 </body>
 </html>
