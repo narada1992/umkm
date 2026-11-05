@@ -856,12 +856,12 @@
                             <div>
                                 <label class="block font-bold text-zinc-700 mb-1">GitHub Personal Access Token (`ghp_...`) *</label>
                                 <input type="password" id="ghSyncToken" required placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-zinc-300 focus:border-brand-500 focus:outline-none font-mono font-semibold bg-white">
-                                <span class="text-[10px] text-zinc-400 block mt-1">Buat gratis di GitHub: <strong>Settings &rarr; Developer settings &rarr; Personal access tokens (Classic) &rarr; centang "repo"</strong>.</span>
+                                <span id="ghTokenSavedHint" class="text-[10px] text-zinc-400 block mt-1">Cukup diisi 1 kali saja. Token akan diingat otomatis di perangkat ini.</span>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                                 <button type="submit" id="ghSyncSaveBtn" class="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-xs transition-all card-pop flex items-center justify-center gap-1.5">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
-                                    <span>Aktifkan & Sinkronkan</span>
+                                    <span>Simpan & Ingat Token</span>
                                 </button>
                                 <button type="button" onclick="exportUpdatedHtmlForGithub()" class="py-2.5 px-3 rounded-xl bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-300 font-extrabold text-xs transition-all card-pop flex items-center justify-center gap-1.5">
                                     <i class="fa-solid fa-download"></i>
@@ -1124,21 +1124,72 @@
         let logoTapTimer = null;
 
         // Konfigurasi Auto-Sync GitHub (Otomatis mendeteksi jika dibuka dari *.github.io)
+        const GH_CONFIG_STORAGE_KEY = 'umkm_meranti_gh_config_v1';
+        const LOCAL_CATALOG_CACHE_KEY = 'umkm_meranti_catalog_cache_v1';
+
         let githubSyncConfig = {
             owner: '',
             repo: '',
             token: ''
         };
 
+        function loadSavedGithubConfig() {
+            try {
+                const saved = localStorage.getItem(GH_CONFIG_STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.owner) githubSyncConfig.owner = parsed.owner;
+                    if (parsed.repo) githubSyncConfig.repo = parsed.repo;
+                    if (parsed.token) githubSyncConfig.token = parsed.token;
+                }
+            } catch (e) {
+                // Abaikan jika gagal membaca storage
+            }
+            autoDetectGithubPagesRepo();
+            updateGithubBadgeStatus();
+        }
+
+        function saveGithubConfigToDevice() {
+            try {
+                localStorage.setItem(GH_CONFIG_STORAGE_KEY, JSON.stringify(githubSyncConfig));
+            } catch (e) {
+                // Abaikan jika mode privat memblokir storage
+            }
+            updateGithubBadgeStatus();
+        }
+
+        function updateGithubBadgeStatus() {
+            const badge = document.getElementById('cloudSyncStatusBadge');
+            const hint = document.getElementById('ghTokenSavedHint');
+            if (githubSyncConfig.token && githubSyncConfig.owner && githubSyncConfig.repo) {
+                if (badge) {
+                    badge.textContent = 'Auto-Sync GitHub Aktif ✓';
+                    badge.className = 'text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full';
+                }
+                if (hint) {
+                    hint.innerHTML = '<span class="text-emerald-600 font-bold">✓ Token sudah tersimpan di perangkat ini. Anda tidak perlu copy-paste lagi.</span>';
+                }
+            } else {
+                if (badge) {
+                    badge.textContent = 'Belum Terhubung GitHub';
+                    badge.className = 'text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full';
+                }
+            }
+        }
+
         function autoDetectGithubPagesRepo() {
             const host = window.location.hostname;
             const pathParts = window.location.pathname.split('/').filter(Boolean);
             if (host.endsWith('.github.io')) {
-                githubSyncConfig.owner = host.replace('.github.io', '');
-                if (pathParts.length > 0) {
-                    githubSyncConfig.repo = pathParts[0];
-                } else {
-                    githubSyncConfig.repo = `${githubSyncConfig.owner}.github.io`;
+                if (!githubSyncConfig.owner) {
+                    githubSyncConfig.owner = host.replace('.github.io', '');
+                }
+                if (!githubSyncConfig.repo) {
+                    if (pathParts.length > 0) {
+                        githubSyncConfig.repo = pathParts[0];
+                    } else {
+                        githubSyncConfig.repo = `${githubSyncConfig.owner}.github.io`;
+                    }
                 }
             }
         }
@@ -1147,19 +1198,31 @@
         // SINKRONISASI DATA LINTAS PERANGKAT OTOMATIS
         // ==========================================
         async function loadData() {
-            autoDetectGithubPagesRepo();
+            loadSavedGithubConfig();
+
+            // 0. Muat cache lokal terlebih dahulu agar instan
+            try {
+                const cached = localStorage.getItem(LOCAL_CATALOG_CACHE_KEY);
+                if (cached) {
+                    applyLoadedCatalogData(JSON.parse(cached), false);
+                }
+            } catch (e) {}
 
             // 1. Jika memiliki info repo GitHub, ambil data real-time langsung dari GitHub API / file JSON
             if (githubSyncConfig.owner && githubSyncConfig.repo) {
                 try {
                     const apiUrl = `https://api.github.com/repos/${githubSyncConfig.owner}/${githubSyncConfig.repo}/contents/data-umkm.json?t=${Date.now()}`;
+                    const headers = { 'Accept': 'application/vnd.github.v3.raw' };
+                    if (githubSyncConfig.token) {
+                        headers['Authorization'] = `Bearer ${githubSyncConfig.token}`;
+                    }
                     const res = await fetch(apiUrl, {
-                        headers: { 'Accept': 'application/vnd.github.v3.raw' },
+                        headers,
                         cache: 'no-store'
                     });
                     if (res.ok) {
                         const remoteData = await res.json();
-                        applyLoadedCatalogData(remoteData);
+                        applyLoadedCatalogData(remoteData, true);
                         return;
                     }
                 } catch (e) {
@@ -1172,7 +1235,7 @@
                 const res = await fetch(`./data-umkm.json?t=${Date.now()}`, { cache: 'no-store' });
                 if (res.ok) {
                     const remoteData = await res.json();
-                    applyLoadedCatalogData(remoteData);
+                    applyLoadedCatalogData(remoteData, true);
                 }
             } catch (e) {
                 // Gunakan data bawaan jika belum ada file data-umkm.json
@@ -1183,7 +1246,7 @@
             }
         }
 
-        function applyLoadedCatalogData(remoteData) {
+        function applyLoadedCatalogData(remoteData, saveToCache = true) {
             if (!remoteData || typeof remoteData !== 'object') return;
             if (Array.isArray(remoteData.stores)) stores = remoteData.stores;
             if (Array.isArray(remoteData.products)) products = remoteData.products;
@@ -1191,6 +1254,13 @@
             if (remoteData.siteSettings) siteSettings = { ...DEFAULT_SETTINGS, ...remoteData.siteSettings };
             if (stores.length > 0 && !selectedStoreForMap) {
                 selectedStoreForMap = stores[0].id;
+            }
+            if (saveToCache) {
+                try {
+                    localStorage.setItem(LOCAL_CATALOG_CACHE_KEY, JSON.stringify({
+                        stores, products, categories, siteSettings
+                    }));
+                } catch (e) {}
             }
             applySiteSettingsToDOM();
             renderCategoryPills();
@@ -1275,20 +1345,28 @@
             githubSyncConfig.repo = document.getElementById('ghSyncRepo').value.trim();
             githubSyncConfig.token = document.getElementById('ghSyncToken').value.trim();
 
+            saveGithubConfigToDevice();
+
             const btn = document.getElementById('ghSyncSaveBtn');
             if (btn) btn.textContent = 'Menghubungkan...';
 
             const ok = await pushDataToGithubRepo();
-            if (btn) btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>Aktifkan & Sinkronkan</span>';
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i><span>Simpan & Ingat Token</span>';
 
             if (ok) {
-                showToast('Berhasil! Sekarang setiap perubahan otomatis tersimpan ke GitHub & tampil di semua perangkat.', 'success');
+                showToast('Token disimpan di perangkat ini! Selanjutnya tambah/edit data akan otomatis tersinkron.', 'success');
             } else {
                 showToast('Gagal terhubung ke GitHub. Periksa kembali Username, Nama Repo, dan Token Anda.', 'error');
             }
         }
 
         function saveData() {
+            try {
+                localStorage.setItem(LOCAL_CATALOG_CACHE_KEY, JSON.stringify({
+                    stores, products, categories, siteSettings
+                }));
+            } catch (e) {}
+
             if (typeof window.syncAllDataToCloud === 'function') {
                 window.syncAllDataToCloud();
             }
@@ -2168,6 +2246,7 @@
             setInputVal('ghSyncOwner', githubSyncConfig.owner);
             setInputVal('ghSyncRepo', githubSyncConfig.repo);
             setInputVal('ghSyncToken', githubSyncConfig.token);
+            updateGithubBadgeStatus();
 
             // Render Emoji Picker
             const emojiGrid = document.getElementById('emojiPickerGrid');
